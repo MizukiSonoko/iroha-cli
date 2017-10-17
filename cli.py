@@ -2,7 +2,7 @@
 
 import sys
 import readline
-from cli import loader, completer, commands, network
+from cli import loader, completer, commands, network, crypto
 from cli.exception import CliException
 from cli.network import generateTransaction
 
@@ -13,28 +13,18 @@ class ChiekuiCli:
     def __init__(self, commands, printInfo=False):
         try:
             res = loader.load(printInfo)
+            self.withoutConf = False
+            self.location = res["location"]
+            self.name = res["name"]
+            self.key_pair = {"publicKey": res["publicKey"], "privateKey": res["privateKey"]}
         except CliException as e:
             print(e.args[0])
-            sys.exit(1)
+            print("Without config mode")
+            self.withoutConf = True
+
         self.printInfo = False
-        self.location = res["location"]
-        self.name = res["name"]
-        self.key_pair = {"publicKey": res["publicKey"], "privateKey": res["privateKey"]}
-        self.source = res["source"]
 
         self.commands = commands.commands
-        self.Type = commands.Type
-        self.built_in = {
-            "config": {
-                "option": {},
-                "function": self.config,
-                "detail": " Print current state \n"
-                          "   - name\n"
-                          "   - publicKey\n"
-                          "   - privateKey\n"
-            }
-        }
-
         commandNames = self.commands.keys()
         opt = {}
         for name in commandNames:
@@ -45,45 +35,24 @@ class ChiekuiCli:
         readline.set_completer(completer.ChiekuiCliBufferCompleter(opt).complete)
         readline.parse_and_bind('tab: complete')
 
-    def config(self, argv):
-        print(
-            "\n"
-            "  Config  \n"
-            " =========\n"
-        )
-        print(" name      : {}".format(self.name))
-        print(" publicKey : {}".format(self.key_pair["publicKey"]))
-        print(" privateKey: {}".format(self.key_pair["privateKey"][:5] + "**...**" + self.key_pair["privateKey"][-5:]))
-        print(" load from : {}".format(self.source))
-        print(" targetPeer: {}".format(self.location))
-        print("")
-        return None
 
     def exec_command(self, cmd, argv):
-        # Built in command is invoked in this
-        if cmd in self.built_in:
-            self.built_in[cmd]["function"]({})
-            return
-
-        # Command is invoked in this
-        elif cmd in self.commands:
+        if cmd in self.commands:
             if "-h" in argv or "--help" in argv:
                 print(self.commands[cmd]["detail"])
                 print("-----------")
                 print("Arguments")
                 for name, opt in self.commands[cmd]["option"].items():
                     print("- {:10s}: {:6}".format(name, opt["detail"]))
-
-                return
+                return True
             else:
                 import getopt
                 expected = list(map(lambda x: x + "=", self.commands[cmd]["option"]))
-
                 try:
                     optlist, _ = getopt.getopt(argv, '', expected)
                 except getopt.GetoptError:
                     print("Maybe option is wrong, I required {}".format(expected))
-                    return
+                    return False
 
                 new_argv = {}
                 for opt in optlist:
@@ -91,19 +60,38 @@ class ChiekuiCli:
                         if name == opt[0].split('--')[-1]:
                             new_argv[name] = opt[1]
                 try:
-                    command = self.commands[cmd]["function"](new_argv)
-                    print("generated command: {}".format(command))
-                    tx = generateTransaction(self.name, [command],self.key_pair)
-                    if not network.sendTx(self.location, tx):
-                        print(
-                            "Transaction is not arrived...\n"
-                            "Could you ckeck this => {}\n"
-                                .format(self.location)
+                    if cmd == "config":
+                        if self.withoutConf:
+                            print("you can show config under loading config, but not loaded config.yml...".format(cmd))
+                            return False
+                        self.commands[cmd]["function"](
+                            {"name":self.name,
+                             "publicKey":self.key_pair["publicKey"],
+                             "privateKey":self.key_pair["privateKey"],
+                             "location":self.location
+                            }
                         )
+                        return True
+
+                    command = self.commands[cmd]["function"](new_argv)
+                    if command:
+                        print("generated command: {}".format(command))
+                        if self.withoutConf:
+                            print("{} is successful, but not loaded config.yml...".format(cmd))
+                            return 0
+                        tx = generateTransaction(self.name, [command],self.key_pair)
+                        if not network.sendTx(self.location, tx):
+                            print(
+                                "Transaction is not arrived...\n"
+                                "Could you ckeck this => {}\n"
+                                    .format(self.location)
+                            )
+                            return False
                 except CliException as e:
                     print(e.message)
-                    return
-                return
+                    return False
+                return True
+
         if cmd.lower() in ["quit", "bye", "finish", "exit", "end"]:
             print("Thanks bye! (^o^) ")
             sys.exit(0)
@@ -140,9 +128,12 @@ def main():
         signal.signal(signal.SIGINT, handler)
         c.run()
     elif len(argv) >= 2 and argv[-1] != "--interactive":
-        res = c.exec_command(argv[1], argv[2:])
-        if res:
-            print(res)
+        if c.exec_command(argv[1], argv[2:]):
+            print("success full")
+            sys.exit(0)
+        else:
+            print("failed")
+            sys.exit(1)
     else:
         print(
             "----------------\n"

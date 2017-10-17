@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 
 from cli import crypto
@@ -145,17 +146,44 @@ class CommandList:
             }
         }
 
+        self.built_in = {
+            "config": {
+                "option": {},
+                "function": self.config,
+                "detail": " Print current state \n"
+                          "   - name\n"
+                          "   - publicKey\n"
+                          "   - privateKey\n"
+            },
+            "keygen": {
+                "option": {
+                    "account_name": {
+                        "type": self.Type.STR,
+                        "detail": "target's account name",
+                        "required": True
+                    }
+                },
+                "function": self.keygen,
+                "detail": " Print current state \n"
+                          "   - name\n"
+                          "   - publicKey\n"
+                          "   - privateKey\n"
+            }
+        }
+        self.commands.update(self.built_in)
+
     def validate(self, expected, argv):
         for item in expected.items():
             if item[1]["required"] and not item[0] in argv:
                 raise CliException("{} is required".format(item[0]))
             if item[0] in argv:
                 if isinstance(argv[item[0]], str):
-                    if item[1]["type"] == self.Type.INT and not argv[item[0]].replace("-","").isdigit():
+                    if item[1]["type"] == self.Type.INT and not argv[item[0]].replace("-", "").isdigit():
                         raise CliException("{} is integer".format(item[0]))
                     if item[1]["type"] == self.Type.UINT and not argv[item[0]].isdigit():
                         raise CliException("{} is unsigned integer".format(item[0]))
-                    if item[1]["type"] == self.Type.FLOAT and not argv[item[0]].replace("-","").replace(".","").isdigit():
+                    if item[1]["type"] == self.Type.FLOAT and not argv[item[0]].replace("-", "").replace(".",
+                                                                                                         "").isdigit():
                         raise CliException("{} is float".format(item[0]))
                 else:
                     raise CliException("{} is str even if number, float".format(item[0]))
@@ -165,6 +193,61 @@ class CommandList:
             print("[{}] run {} ".format(BASE_NAME, name))
             for n in expected.keys():
                 print("- {}: {}".format(n, argv[n]))
+
+
+            # =============================================
+
+    def config(self, argv):
+        print(
+            "\n"
+            "  Config  \n"
+            " =========\n"
+        )
+        print(" name      : {}".format(argv["name"]))
+        print(" publicKey : {}".format(argv["publicKey"]))
+        print(" privateKey: {}".format(
+            argv["privateKey"][:5] + "**...**" + argv["privateKey"][-5:])
+        )
+        print(" targetPeer: {}".format(argv["location"]))
+        print("")
+        return None
+
+    def keygen(self, argv):
+        name = "keygen"
+        argv_info = self.commands[name]["option"]
+        self.validate(argv_info, argv)
+        self.printTransaction(name, argv_info, argv)
+
+        pubKey, priKey = crypto.generate_keypair_hex()
+        try:
+            if "keypair_name" in argv:
+                filename_base = argv["keypair_name"]
+            else:
+                filename_base = argv["account_name"]
+
+            pub = open(filename_base + ".pub", "w")
+            pub.write(pubKey.decode('utf-8'))
+            pri = open(filename_base + ".pri", "w")
+            pri.write(priKey.decode('utf-8'))
+            os.chmod(filename_base + ".pub", 0o400)
+            os.chmod(filename_base + ".pri", 0o400)
+            pub.close()
+            pri.close()
+        except CliException as e:
+            print(e)
+            print("file error")
+            return None
+        else:
+            if self.printInfo:
+                print(
+                    "key save publicKey -> {} privateKey -> {}".format(filename_base + ".pub", filename_base))
+                print("key save publicKey:{} privateKey:{}".format(
+                    pubKey[:5] + "..." + pubKey[-5:],
+                    priKey[:5] + "**...**" + priKey[-5:],
+                ))
+            return None
+
+    # =============================================
 
     def AddAssetQuantity(self, argv):
         name = "AddAssetQuantity"
@@ -203,7 +286,7 @@ class CommandList:
 
             pub = open(filename_base + ".pub", "w")
             pub.write(pubKey.decode('utf-8'))
-            pri = open(filename_base, "w")
+            pri = open(filename_base + ".pri", "w")
             pri.write(priKey.decode('utf-8'))
             pub.close()
             pri.close()
@@ -233,7 +316,7 @@ class CommandList:
         return Command(create_asset=CreateAsset(
             asset_name=argv["asset_name"],
             domain_id=argv["domain_id"],
-            precision=int(argv.get("precision",0))
+            precision=int(argv.get("precision", 0))
         ))
 
     def CreateDomain(self, argv):
