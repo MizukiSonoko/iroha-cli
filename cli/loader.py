@@ -82,7 +82,7 @@ def load(printInfo = False):
             "publicKey": publicKey,
             "privateKey": privateKey,
             "source": "config.yml",
-            "location": address + str(port)
+            "location": address +":"+ str(port)
         }
 
     #------
