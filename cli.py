@@ -3,13 +3,16 @@
 import sys
 import readline
 from cli import loader, completer, commands, network
+from cli.network import generateTransaction
+
 BASE_NAME = "iroha-cli"
 
 class ChiekuiCli:
 
-    def __init__(self, commands):
-        res = loader.load()
+    def __init__(self, commands,printInfo = False):
+        res = loader.load(printInfo)
 
+        self.printInfo = False
         self.location = res["location"]
         self.name = res["name"]
         self.publicKey = res["publicKey"]
@@ -17,6 +20,7 @@ class ChiekuiCli:
         self.source = res["source"]
 
         self.commands = commands.commands
+        self.Type     = commands.Type
         self.built_in = {
             "push": {
                 "option": [],
@@ -57,13 +61,36 @@ class ChiekuiCli:
         pass
 
     def exec_command(self, cmd, argv):
+
         if cmd in self.commands:
             if "-h" in argv or "--help" in argv:
                 print(self.commands[cmd]["detail"])
             else:
-                tx = self.commands[cmd]["function"](argv)
-                network.sendTx(self.location, tx)
+                import getopt
+                expected = list(map(lambda x: x+"=", self.commands[cmd]["option"]))
 
+                try:
+                    optlist, _ = getopt.getopt(argv, '', expected)
+                except getopt.GetoptError:
+                    print("Maybe option is wrong, I required {}".format(expected))
+                    return
+
+                new_argv = {}
+                for opt in optlist:
+                    for name in self.commands[cmd]["option"]:
+                        if name == opt[0].split('--')[-1]:
+                            new_argv[name] = opt[1]
+                try:
+                    command = self.commands[cmd]["function"](new_argv)
+                    print("generated command: {}".format(command))
+                    tx = generateTransaction(self.name, [command])
+                    if not network.sendTx(self.location, tx):
+                        print("Transaction is not arrived...\n")
+                except Exception as e:
+                    print(e.args[0])
+                    print(e.with_traceback())
+                    return
+                return
         if cmd.lower() in ["quit", "bye", "finish", "exit", "end"]:
             print("Thanks bye! (^o^) ")
             sys.exit(0)
@@ -89,20 +116,22 @@ def handler(signal, frame):
     sys.exit(0)
 
 def main():
+    printInfo = False
     import signal
     argv = sys.argv
     cmdList = commands.CommandList()
-    print(
-        "----------------\n"
-        "Iroha-mizuki-cli\n"
-        "----------------\n\n"
-        "Current support commands"
-    )
-    for cmd in cmdList.commands.keys():
-        print("  - {}".format(cmd))
-    print("\n")
+    if printInfo:
+        print(
+            "----------------\n"
+            "Iroha-mizuki-cli\n"
+            "----------------\n\n"
+            "Current support commands"
+        )
+        for cmd in cmdList.commands.keys():
+            print("  - {}".format(cmd))
+        print("\n")
 
-    c = ChiekuiCli(cmdList)
+    c = ChiekuiCli(cmdList,printInfo)
     if len(argv) == 2 and argv[-1] == "--interactive":
         signal.signal(signal.SIGINT, handler)
         c.run()
@@ -111,7 +140,7 @@ def main():
         if res:
             print(res)
     else:
-        print("How to use")
+        print("How to use ToDo")
 
 if __name__ == "__main__":
     import logging
