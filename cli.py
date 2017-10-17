@@ -1,4 +1,4 @@
-#! /Users/mizuki/.pyenv/versions/3.5.0/envs/sandbox/bin/python
+#! /usr/bin/python
 
 import sys
 import readline
