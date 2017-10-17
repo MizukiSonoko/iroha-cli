@@ -67,6 +67,10 @@ def sendTx(location, tx):
         stub = CommandServiceStub(channel)
         stub.Torii(tx, timeout=1)  # wait 1s
         return True
-    except Exception as e:
-        print(e)
+    except grpc._channel._Rendezvous as e:
+        print("== Grpc happens error ==\n"
+              "- Server is active?: {} \n"
+              "- What's happen?   : {} \n"
+              .format(e.is_active(),e.details())
+        )
         return False
