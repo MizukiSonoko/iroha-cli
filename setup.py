@@ -8,7 +8,7 @@ setup(
       description='Cli for hyperledger/iroha',
       author='Sonoko Mizuki',
       author_email='mizuki.sonoko@gmail.com',
-      packages=['src'],
+      packages=['src','schema'],
       entry_points={
       'console_scripts':
             'iroha-ya-cli = src.main:main'
