@@ -1,10 +1,9 @@
 import unittest
 import sys, os
 
-from cli.exception import CliException
-
-sys.path.insert(0, os.path.abspath(__file__ + "/../../"))
-from cli import commands
+sys.path.insert(0, os.path.abspath(__file__ + "/../../cli"))
+import commands
+from exception import CliException
 
 
 class Sample:
