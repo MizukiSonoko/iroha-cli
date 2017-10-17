@@ -92,7 +92,6 @@ class ChiekuiCli:
                         )
                 except Exception as e:
                     print(e.args[0])
-                    print(e.with_traceback())
                     return
                 return
         if cmd.lower() in ["quit", "bye", "finish", "exit", "end"]:
