@@ -1,7 +1,7 @@
 
 ## YAC: Yet Another Cli of Iroha
 
-[hyperledger/iroha](https://github.com/hyperledger/iroha) is open source, so I want to contribute it.
+[hyperledger/iroha](https://github.com/hyperledger/iroha) is open source, I want to contribute to it...  
 
 ## How to use
 
