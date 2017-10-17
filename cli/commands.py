@@ -2,7 +2,7 @@ from enum import Enum
 
 from cli import crypto
 
-from schema.commands_pb2 import Command, CreateAsset, AddAssetQuantity, CreateAccount
+from schema.commands_pb2 import Command, CreateAsset, AddAssetQuantity, CreateAccount, CreateDomain, TransferAsset
 from schema.primitive_pb2 import Amount, uint256
 
 BASE_NAME = "iroha-mizuki-cli"
@@ -261,7 +261,7 @@ class CommandList:
         argv_info = self.commands[name]["option"]
         self.validate(argv_info, argv)
         self.printTransaction(name, argv_info, argv)
-        return Command(create_domain=Command.CreateDomain(
+        return Command(create_domain=CreateDomain(
             domain_name=argv["domain_name"]
         ))
 
@@ -272,13 +272,13 @@ class CommandList:
         self.printTransaction(name, argv_info, argv)
 
         # ToDo validate and print check
-        return Command(transfer_asset=Command.TransferAsset(
+        return Command(transfer_asset=TransferAsset(
             src_account_id=argv["src_account_id"],
             dest_account_id=argv["dest_account_id"],
             asset_id=argv["asset_id"],
             description=argv.get("description", ""),
             amount=Amount(value=uint256(
-                first=int(argv["amount"]),
+                first=int(float(argv["amount"])),
                 second=0,
                 third=0,
                 fourth=0,
