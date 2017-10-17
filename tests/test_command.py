@@ -1,6 +1,8 @@
 import unittest
 import sys, os
 
+from cli.exception import CliException
+
 sys.path.insert(0, os.path.abspath(__file__ + "/../../"))
 from cli import commands
 
@@ -48,10 +50,10 @@ class TestAddAssetQuantity(unittest.TestCase):
                     "amount": "10.0"
                 }
             )
-        except Exception as e:
+        except CliException as e:
             self.assertTrue(e.args[0] == "account_id is required")
         else:
-            self.fail("I want to exception")
+            self.fail("I want to CliException")
 
     def test_no_asset_id_command_generate(self):
         try:
@@ -61,7 +63,7 @@ class TestAddAssetQuantity(unittest.TestCase):
                     "amount": "10.0"
                 }
             )
-        except Exception as e:
+        except CliException as e:
             self.assertTrue(e.args[0] == "asset_id is required")
         else:
             self.fail("I want to exception")
@@ -74,7 +76,7 @@ class TestAddAssetQuantity(unittest.TestCase):
                     "asset_id": self.sample.sample_asset_id_1
                 }
             )
-        except Exception as e:
+        except CliException as e:
             self.assertTrue(e.args[0] == "amount is required")
         else:
             self.fail("I want to exception")
@@ -88,7 +90,7 @@ class TestAddAssetQuantity(unittest.TestCase):
                     "amount": "10.0"
                 }
             )
-        except Exception as e:
+        except CliException as e:
             self.assertTrue(e.args[0] == "account_id is str even if number, float")
         else:
             self.fail("I want to exception")
@@ -102,7 +104,7 @@ class TestAddAssetQuantity(unittest.TestCase):
                     "amount": 100
                 }
             )
-        except Exception as e:
+        except CliException as e:
             self.assertTrue(e.args[0] == "amount is str even if number, float")
         else:
             self.fail("I want to exception")
@@ -154,7 +156,7 @@ class TestCreateAccount(unittest.TestCase):
                  "domain_id": self.sample.sample_domain_id
                  }
             )
-        except Exception as e:
+        except CliException as e:
             self.assertTrue(e.args[0] == "account_name is required")
         else:
             self.fail("I want to exception")
@@ -167,7 +169,7 @@ class TestCreateAccount(unittest.TestCase):
                  "domain_id": self.sample.sample_domain_id
                  }
             )
-        except Exception as e:
+        except CliException as e:
             self.assertTrue(e.args[0] == "account_name is str even if number, float")
         else:
             self.fail("I want to exception")
@@ -181,7 +183,7 @@ class TestCreateAccount(unittest.TestCase):
                    "keypair_name": 1234
                  }
             )
-        except Exception as e:
+        except CliException as e:
             self.assertTrue(e.args[0] == "keypair_name is str even if number, float")
         else:
             self.fail("I want to exception")
@@ -234,7 +236,7 @@ class TestCreateAccount(unittest.TestCase):
                  "domain_id": self.sample.sample_domain_id
                  }
             )
-        except Exception as e:
+        except CliException as e:
             self.assertTrue(e.args[0] == "account_name is required")
         else:
             self.fail("I want to exception")
@@ -247,7 +249,7 @@ class TestCreateAccount(unittest.TestCase):
                  "domain_id": self.sample.sample_domain_id
                  }
             )
-        except Exception as e:
+        except CliException as e:
             self.assertTrue(e.args[0] == "account_name is str even if number, float")
         else:
             self.fail("I want to exception")
@@ -261,40 +263,12 @@ class TestCreateAccount(unittest.TestCase):
                    "keypair_name": 1234
                  }
             )
-        except Exception as e:
+        except CliException as e:
             self.assertTrue(e.args[0] == "keypair_name is str even if number, float")
         else:
             self.fail("I want to exception")
 
 
-"""
-name = "CreateAccount"
-        argv_info = self.commands[name]["option"]
-        self.validate(argv_info,argv)
-        self.printTransaction(name,argv_info,argv)
-
-        # ToDo validate and print check
-        # I want to auto generate
-        pubKey, priKey = crypto.generate_hex_sstr()
-        try:
-            open(argv["keypair_path"] + ".pub", "w").write(pubKey)
-            open(argv["keypair_path"], "w").write(priKey)
-        except:
-            print("file error")
-            return None
-        else:
-            print(
-                "key save publicKey -> {} privateKey -> {}".format(argv["keypair_path"] + ".pub", argv["keypair_path"]))
-            print("key save publicKey:{} privateKey:{}".format(
-                pubKey[:5] + "..." + pubKey[-5:],
-                priKey[:5] + "**...**" + priKey[-5:],
-            ))
-        return Command(create_account=Command.CreateAccount(
-            account_name=argv["account_name"],
-            domain_id=argv["domain_id"],
-            main_pubkey=pubKey
-        ))
-"""
 
 if __name__ == "__main__":
     unittest.main()
