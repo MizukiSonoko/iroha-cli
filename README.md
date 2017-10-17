@@ -12,10 +12,12 @@ peer:
     address:    localhost
     port:       50051
 account:
-    publicKey:  be98f280f22572686cbac3977f85be12176d72d45067ade75d81f6b5b626c138
-    privateKey: 908ab4b8314044a3a7abc5f914dc96c822f0d3f469f132158ab2be6553fb4968f105fe252430f1a8f6bd635dc06ca3ec1055dea9128ae598e8540bf9666cfcff
+    publicKeyPath:  mizuki@aizu.pub
+    privateKeyPath: mizuki@aizu
     name:       mizuki
 ```
+ToDo add generate keypair
+
 2) Check config is whether correct or not using `config`. 
 
 ```
@@ -74,7 +76,6 @@ python ./cli.py CreateAsset --domain_id japan --precision 0 --asset_name yen
 
 ```
 python ./cli.py CreateAccount --account_name mizuki --domain_id japan
-
 ```
 
 - CreateDomain
