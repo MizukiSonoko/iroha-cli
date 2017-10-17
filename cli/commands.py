@@ -111,7 +111,7 @@ class CommandList:
                         "required": True
                     },
                     "precision": {
-                        "type": self.Type.STR,
+                        "type": self.Type.INT,
                         "detail": "how much support .000, default 0",
                         "required": False
                     }
@@ -157,16 +157,15 @@ class CommandList:
             if item[1]["required"] and not item[0] in argv:
                 raise Exception("{} is required".format(item[0]))
             if item[0] in argv:
-                if item[1]["type"] == self.Type.STR and not isinstance(argv[item[0]], str):
-                    raise Exception("{} is str".format(item[0]))
-
-                if item[1]["type"] == self.Type.INT and not isinstance(argv[item[0]], int):
-                    raise Exception("{} is integer".format(item[0]))
-                if item[1]["type"] == self.Type.UINT and not isinstance(argv[item[0]], int) and argv[item[0]] < 0:
-                    raise Exception("{} is unsigned integer".format(item[0]))
-                if item[1]["type"] == self.Type.FLOAT and not isinstance(argv[item[0]], float):
-                    raise Exception("{} is float".format(item[0]))
-
+                if isinstance(argv[item[0]], str):
+                    if item[1]["type"] == self.Type.INT and not argv[item[0]].replace("-","").isdigit():
+                        raise Exception("{} is integer".format(item[0]))
+                    if item[1]["type"] == self.Type.UINT and not argv[item[0]].isdigit():
+                        raise Exception("{} is unsigned integer".format(item[0]))
+                    if item[1]["type"] == self.Type.FLOAT and not argv[item[0]].replace("-","").replace(".","").isdigit():
+                        raise Exception("{} is float".format(item[0]))
+                else:
+                    raise Exception("{} is str even if number, float".format(item[0]))
     def printTransaction(self, name, expected, argv):
         if self.printInfo:
             print("[{}] run {} ".format(BASE_NAME, name))
@@ -198,7 +197,7 @@ class CommandList:
             account_id=argv["account_id"],
             asset_id=argv["asset_id"],
             amount=Amount(value=uint256(
-                first=int(argv["amount"]),
+                first=int(float(argv["amount"])),
                 second=0,
                 third=0,
                 fourth=0,
@@ -251,11 +250,10 @@ class CommandList:
         argv_info = self.commands[name]["option"]
         self.validate(argv_info, argv)
         self.printTransaction(name, argv_info, argv)
-
         return Command(create_asset=CreateAsset(
             asset_name=argv["asset_name"],
             domain_id=argv["domain_id"],
-            precision=argv["precision"]
+            precision=int(argv.get("precision",0))
         ))
 
     def CreateDomain(self, argv):

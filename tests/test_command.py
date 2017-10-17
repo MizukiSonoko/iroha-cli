@@ -32,7 +32,7 @@ class TestAddAssetQuantity(unittest.TestCase):
         command = self.commands["AddAssetQuantity"]["function"](
             {"account_id": self.sample.sample_account_id_1,
              "asset_id": self.sample.sample_asset_id_1,
-             "amount": 10.0
+             "amount": "10.0"
              }
         )
         self.assertTrue(command.add_asset_quantity)
@@ -45,7 +45,7 @@ class TestAddAssetQuantity(unittest.TestCase):
             self.commands["AddAssetQuantity"]["function"](
                 {
                     "asset_id": self.sample.sample_asset_id_1,
-                    "amount": 10.0
+                    "amount": "10.0"
                 }
             )
         except Exception as e:
@@ -58,7 +58,7 @@ class TestAddAssetQuantity(unittest.TestCase):
             self.commands["AddAssetQuantity"]["function"](
                 {
                     "account_id": self.sample.sample_account_id_1,
-                    "amount": 10.0
+                    "amount": "10.0"
                 }
             )
         except Exception as e:
@@ -85,11 +85,11 @@ class TestAddAssetQuantity(unittest.TestCase):
                 {
                     "account_id": 123,
                     "asset_id": self.sample.sample_asset_id_1,
-                    "amount": 10.0
+                    "amount": "10.0"
                 }
             )
         except Exception as e:
-            self.assertTrue(e.args[0] == "account_id is str")
+            self.assertTrue(e.args[0] == "account_id is str even if number, float")
         else:
             self.fail("I want to exception")
 
@@ -99,11 +99,11 @@ class TestAddAssetQuantity(unittest.TestCase):
                 {
                     "account_id": self.sample.sample_account_id_1,
                     "asset_id": self.sample.sample_asset_id_1,
-                    "amount": "10.0"
+                    "amount": 100
                 }
             )
         except Exception as e:
-            self.assertTrue(e.args[0] == "amount is float")
+            self.assertTrue(e.args[0] == "amount is str even if number, float")
         else:
             self.fail("I want to exception")
 
@@ -168,7 +168,7 @@ class TestCreateAccount(unittest.TestCase):
                  }
             )
         except Exception as e:
-            self.assertTrue(e.args[0] == "account_name is str")
+            self.assertTrue(e.args[0] == "account_name is str even if number, float")
         else:
             self.fail("I want to exception")
 
@@ -182,7 +182,7 @@ class TestCreateAccount(unittest.TestCase):
                  }
             )
         except Exception as e:
-            self.assertTrue(e.args[0] == "keypair_name is str")
+            self.assertTrue(e.args[0] == "keypair_name is str even if number, float")
         else:
             self.fail("I want to exception")
 
@@ -248,7 +248,7 @@ class TestCreateAccount(unittest.TestCase):
                  }
             )
         except Exception as e:
-            self.assertTrue(e.args[0] == "account_name is str")
+            self.assertTrue(e.args[0] == "account_name is str even if number, float")
         else:
             self.fail("I want to exception")
 
@@ -262,7 +262,7 @@ class TestCreateAccount(unittest.TestCase):
                  }
             )
         except Exception as e:
-            self.assertTrue(e.args[0] == "keypair_name is str")
+            self.assertTrue(e.args[0] == "keypair_name is str even if number, float")
         else:
             self.fail("I want to exception")
 
