@@ -1,0 +1,7 @@
+peer:
+    address:    localhost
+    port:       50051
+account:
+    publicKeyPath:  mizuki.pub
+    privateKeyPath: mizuki.pri
+    name:           mizuki
