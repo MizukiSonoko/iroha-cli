@@ -5,6 +5,19 @@
 
 ## How to use
 
+0) Make `keypair` in this.
+```
+$ python ./cli.py  keygen --account_name mizuki
+```
+Result
+```
+$ ls -lth | head  -n 3
+total 56
+-r--------   1 mizuki  staff    64B Oct 17 18:00 mizuki.pri
+-r--------   1 mizuki  staff    64B Oct 17 18:00 mizuki.pub
+```
+
+
 1) Make `config.yml` in pwd
 This file contains target peer information and my account info.
 ```config
@@ -16,7 +29,7 @@ account:
     privateKeyPath: mizuki@aizu
     name:       mizuki
 ```
-ToDo add generate keypair
+
 
 2) Check config is whether correct or not using `config`. 
 
