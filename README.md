@@ -25,9 +25,9 @@ peer:
     address:    localhost
     port:       50051
 account:
-    publicKeyPath:  mizuki@aizu.pub
-    privateKeyPath: mizuki@aizu
-    name:       mizuki
+    publicKeyPath:  mizuki.pub
+    privateKeyPath: mizuki.pri
+    name:           mizuki
 ```
 
 
