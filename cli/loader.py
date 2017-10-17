@@ -1,43 +1,42 @@
-
-
-import yaml
 import sys
+
+from cli.exception import CliException
+
 BASE_NAME = "iroha-mizuki-cli"
 
 def load(printInfo = False):
     import yaml
-    import os
     try:
         data = yaml.load(open("config.yml", "r"), yaml.SafeLoader)
         if not "account" in data:
-            print("[{}] Require account dict".format(BASE_NAME))
-            sys.exit(1)
+            raise CliException("Require account dict in confid.yml")
 
         if not "peer" in data:
-            print("[{}] Require peer dict".format(BASE_NAME))
-            sys.exit(1)
+            raise CliException("Require peer dict in confid.yml")
 
         name = data["account"].get("name")
-        publicKey = data["account"].get("publicKey")
-        privateKey = data["account"].get("privateKey")
+        publicKeyPath = data["account"].get("publicKeyPath")
+        privateKeyPath = data["account"].get("privateKeyPath")
         if not name:
-            print("[{}]  Require name in account".format(BASE_NAME))
-            raise
-        if not publicKey:
-            print("[{}]  Require publicKey in account".format(BASE_NAME))
-            raise
-        if not privateKey:
-            print("[{}]  Require publicKey in account".format(BASE_NAME))
-            raise
+            raise CliException("Require name in account in confid.yml")
+        if not publicKeyPath:
+            raise CliException("Require publicKey in account in confid.yml")
+
+        try:
+            publicKey = open( publicKeyPath, "r").read()
+            privateKey = open( privateKeyPath, "r").read()
+        except FileNotFoundError:
+            raise CliException("File not found : {} or {} ".format(publicKeyPath ,privateKeyPath))
+
+        if not privateKeyPath:
+            raise CliException("Require privateKey in account in confid.yml")
 
         address = data["peer"].get("address")
         port = data["peer"].get("port")
         if not address:
-            print("[{}]  Require address in peer".format(BASE_NAME))
-            raise
+            raise CliException("Require address in peer in confid.yml")
         if not port:
-            print("[{}]  Require port in peer".format(BASE_NAME))
-            raise
+            raise CliException("Require port(int) in peer in confid.yml")
 
         if printInfo:
             print("[{}] use config.yml data".format(BASE_NAME))
@@ -71,69 +70,18 @@ def load(printInfo = False):
                     exc.problem_mark,
                     exc.problem
                 ))
+            sys.exit(1)
         else:
             print("[{}] Something went wrong while parsing yaml file".format(BASE_NAME))
+            sys.exit(1)
     except FileNotFoundError as e:
-        print("[{}] I recommend to make config.yml in current directory".format(BASE_NAME))
-        return
+        print("[{}] Could you make config.yml in current directory".format(BASE_NAME))
+        sys.exit(1)
     else:
         return {
             "name": name,
             "publicKey": publicKey,
             "privateKey": privateKey,
             "source": "config.yml",
-            "location": address +":"+ str(port)
+            "location": address +":" + str(port)
         }
-
-    #------
-    # This code will be deleted...
-    #------
-    name = os.getenv("CHIEKUI_CLI_NAME")
-    publicKey = os.getenv("CHIEKUI_CLI_PUBLIC_KEY")
-    privateKey = os.getenv("CHIEKUI_CLI_PRIVATE_KEY")
-
-    if not name:
-        print("[{}] Required name in environment 'CHIEKUI_CLI_NAME' ".format(BASE_NAME))
-        sys.exit(1)
-
-    if publicKey and privateKey:
-        return {
-            "name": name,
-            "publicKey": publicKey,
-            "privateKey": privateKey,
-            "source": "environment"
-        }
-
-
-    try:
-        pubKeyFile = os.getenv("CHIEKUI_CLI_PUBLIC_KEY_PATH")
-        priKeyFile = os.getenv("CHIEKUI_CLI_PRIVATE_KEY_PATH")
-
-        publicKey = open(pubKeyFile, 'r').read()
-        privateKey = open(priKeyFile, 'r').read()
-    except IOError:
-        print(
-            "[{}] Unfortunately, I can not load\n {} in CHIEKUI_CLI_PUBLIC_KEY or {} in CHIEKUI_CLI_PRIVATE_KEY_PATH".format(
-                BASE_NAME, pubKeyFile, priKeyFile
-            ))
-        sys.exit(1)
-    except TypeError:
-        print(
-            "[{}] Unfortunately, Not set CHIEKUI_CLI_PUBLIC_KEY or CHIEKUI_CLI_PRIVATE_KEY_PATH".format(
-                BASE_NAME
-            ))
-        sys.exit(1)
-
-
-    if not publicKey or not privateKey:
-        print("[{}] Unfortunately, I can not load enough information.... so I can not boot".format(
-            BASE_NAME
-        ))
-        sys.exit(1)
-
-    return {
-        "name": name,
-        "publicKey": publicKey,
-        "privateKey": privateKey,
-        "source": "environment and file"
-    }

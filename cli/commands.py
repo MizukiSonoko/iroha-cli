@@ -1,6 +1,7 @@
 from enum import Enum
 
 from cli import crypto
+from cli.exception import CliException
 
 from schema.commands_pb2 import Command, CreateAsset, AddAssetQuantity, CreateAccount, CreateDomain, TransferAsset
 from schema.primitive_pb2 import Amount, uint256
@@ -147,17 +148,17 @@ class CommandList:
     def validate(self, expected, argv):
         for item in expected.items():
             if item[1]["required"] and not item[0] in argv:
-                raise Exception("{} is required".format(item[0]))
+                raise CliException("{} is required".format(item[0]))
             if item[0] in argv:
                 if isinstance(argv[item[0]], str):
                     if item[1]["type"] == self.Type.INT and not argv[item[0]].replace("-","").isdigit():
-                        raise Exception("{} is integer".format(item[0]))
+                        raise CliException("{} is integer".format(item[0]))
                     if item[1]["type"] == self.Type.UINT and not argv[item[0]].isdigit():
-                        raise Exception("{} is unsigned integer".format(item[0]))
+                        raise CliException("{} is unsigned integer".format(item[0]))
                     if item[1]["type"] == self.Type.FLOAT and not argv[item[0]].replace("-","").replace(".","").isdigit():
-                        raise Exception("{} is float".format(item[0]))
+                        raise CliException("{} is float".format(item[0]))
                 else:
-                    raise Exception("{} is str even if number, float".format(item[0]))
+                    raise CliException("{} is str even if number, float".format(item[0]))
 
     def printTransaction(self, name, expected, argv):
         if self.printInfo:
@@ -192,8 +193,7 @@ class CommandList:
 
         # ToDo validate and print check
         # I want to auto generate
-        pubKey, priKey = crypto.generate_hex_sstr()
-        filename_base = ""
+        pubKey, priKey = crypto.generate_keypair_hex()
         try:
 
             if "keypair_name" in argv:
@@ -202,12 +202,12 @@ class CommandList:
                 filename_base = argv["account_name"] + "@" + argv["domain_id"]
 
             pub = open(filename_base + ".pub", "w")
-            pub.write(pubKey)
+            pub.write(pubKey.decode('utf-8'))
             pri = open(filename_base, "w")
-            pri.write(priKey)
+            pri.write(priKey.decode('utf-8'))
             pub.close()
             pri.close()
-        except Exception as e:
+        except CliException as e:
             print(e)
             print("file error")
             return None
@@ -222,7 +222,7 @@ class CommandList:
         return Command(create_account=CreateAccount(
             account_name=argv["account_name"],
             domain_id=argv["domain_id"],
-            main_pubkey=pubKey.encode()
+            main_pubkey=pubKey
         ))
 
     def CreateAsset(self, argv):
