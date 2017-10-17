@@ -7,7 +7,7 @@
 
 #### 0) Make `keypair` in this.
 ```
-$ python ./cli.py  keygen --account_name mizuki
+$ iroha-ya-cli  keygen --account_name mizuki
 ```
 Result
 ```
@@ -70,12 +70,12 @@ I sent. (This error is expected, no problem)
 
 In first, you can see all command use this.
 ```
-python ./cli.py
+iroha-ya-cli
 ```
 
 In second, you can see detail of each command.
 ```
-$ python ./cli.py CreateAsset -h
+$ iroha-ya-cli CreateAsset -h
 Create new asset in domain
 -----------
 Arguments
@@ -88,19 +88,19 @@ Arguments
 
 - CreateAsset 
 ```
-python ./cli.py CreateAsset --domain_id japan --precision 0 --asset_name yen
+iroha-ya-cli CreateAsset --domain_id japan --precision 0 --asset_name yen
 ```
 
 - CreateAccount
 
 ```
-python ./cli.py CreateAccount --account_name mizuki --domain_id japan
+iroha-ya-cli CreateAccount --account_name mizuki --domain_id japan
 ```
 
 - CreateDomain
 
 ```
-python ./cli.py CreateDomain --domain_name aizu
+iroha-ya-cli CreateDomain --domain_name aizu
 ```
 
 ....
@@ -114,9 +114,14 @@ python -m unittest discover
 ## Prev
 ```
 # Compile protofile 
-docker run -it -v  $(pwd)/iroha-mizuki-cli:/opt/iroha-mizuki-cli mizukisonoko/alpine-grpc-protobuf sh -c  "cd /opt/iroha-mizuki-cli; ls schema/*.proto | xargs -I{} sh -c 'protoc -I=./ --python_out=./ {}; protoc -I=./ --python_out=./ --grpc_out=./ --plugin=protoc-gen-grpc=`which grpc_python_plugin` {}'"
+git clone https://github.com/MizukiSonoko/iroha-cli.git
+cd iroha-cli
+docker run -it -v  $(pwd):/opt/iroha-mizuki-cli mizukisonoko/alpine-grpc-protobuf sh -c  "cd /opt/iroha-mizuki-cli; ls schema/*.proto | xargs -I{} sh -c 'protoc -I=./ --python_out=./src {}; protoc -I=./ --python_out=./src --grpc_out=./src --plugin=protoc-gen-grpc=`which grpc_python_plugin` {}'"
 pip install -r requirements.txt 
 ```
+
+
+
 
 ## Env
 - Python 3.5.0
