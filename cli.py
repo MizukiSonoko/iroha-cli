@@ -3,24 +3,27 @@
 import sys
 import readline
 from cli import loader, completer, commands, network
+from cli.exception import CliException
 from cli.network import generateTransaction
 
 BASE_NAME = "iroha-cli"
 
+
 class ChiekuiCli:
-
-    def __init__(self, commands,printInfo = False):
-        res = loader.load(printInfo)
-
+    def __init__(self, commands, printInfo=False):
+        try:
+            res = loader.load(printInfo)
+        except CliException as e:
+            print(e.args[0])
+            sys.exit(1)
         self.printInfo = False
         self.location = res["location"]
         self.name = res["name"]
-        self.publicKey = res["publicKey"]
-        self.privateKey = res["privateKey"]
+        self.key_pair = {"publicKey": res["publicKey"], "privateKey": res["privateKey"]}
         self.source = res["source"]
 
         self.commands = commands.commands
-        self.Type     = commands.Type
+        self.Type = commands.Type
         self.built_in = {
             "config": {
                 "option": {},
@@ -37,7 +40,6 @@ class ChiekuiCli:
         for name in commandNames:
             opt[name] = list(map(lambda name: name, self.commands[name]["option"].keys())) + ["-h"]
 
-
         opt["quit"] = []
         opt["bye"] = []
         readline.set_completer(completer.ChiekuiCliBufferCompleter(opt).complete)
@@ -50,12 +52,13 @@ class ChiekuiCli:
             " =========\n"
         )
         print(" name      : {}".format(self.name))
-        print(" publicKey : {}".format(self.publicKey))
-        print(" privateKey: {}".format(self.privateKey[:5] + "**...**" + self.privateKey[-5:]))
+        print(" publicKey : {}".format(self.key_pair["publicKey"]))
+        print(" privateKey: {}".format(self.key_pair["privateKey"][:5] + "**...**" + self.key_pair["privateKey"][-5:]))
         print(" load from : {}".format(self.source))
         print(" targetPeer: {}".format(self.location))
         print("")
         return None
+
     def exec_command(self, cmd, argv):
         # Built in command is invoked in this
         if cmd in self.built_in:
@@ -74,7 +77,7 @@ class ChiekuiCli:
                 return
             else:
                 import getopt
-                expected = list(map(lambda x: x+"=", self.commands[cmd]["option"]))
+                expected = list(map(lambda x: x + "=", self.commands[cmd]["option"]))
 
                 try:
                     optlist, _ = getopt.getopt(argv, '', expected)
@@ -90,16 +93,15 @@ class ChiekuiCli:
                 try:
                     command = self.commands[cmd]["function"](new_argv)
                     print("generated command: {}".format(command))
-                    tx = generateTransaction(self.name, [command])
+                    tx = generateTransaction(self.name, [command],self.key_pair)
                     if not network.sendTx(self.location, tx):
                         print(
                             "Transaction is not arrived...\n"
                             "Could you ckeck this => {}\n"
-                            .format(self.location)
+                                .format(self.location)
                         )
-                except Exception as e:
-                    print(e.args[0])
-                    print(e.with_traceback())
+                except CliException as e:
+                    print(e.message)
                     return
                 return
         if cmd.lower() in ["quit", "bye", "finish", "exit", "end"]:
@@ -122,27 +124,18 @@ class ChiekuiCli:
                 if res:
                     print(res)
 
+
 def handler(signal, frame):
     print("\nThanks bye! (^o^) ")
     sys.exit(0)
+
 
 def main():
     printInfo = False
     import signal
     argv = sys.argv
     cmdList = commands.CommandList()
-    if printInfo:
-        print(
-            "----------------\n"
-            "Iroha-mizuki-cli\n"
-            "----------------\n\n"
-            "Current support commands"
-        )
-        for cmd in cmdList.commands.keys():
-            print("  - {}".format(cmd))
-        print("\n")
-
-    c = ChiekuiCli(cmdList,printInfo)
+    c = ChiekuiCli(cmdList, printInfo)
     if len(argv) == 2 and argv[-1] == "--interactive":
         signal.signal(signal.SIGINT, handler)
         c.run()
@@ -161,9 +154,9 @@ def main():
             print("  - {}".format(cmd))
 
         print(
-              "\n"
-              "Sample:\n\n"
-              "  > python ./cli.py CreateAsset --domain_id japan --precision 0 --asset_name yen"
+            "\n"
+            "Sample:\n\n"
+            "  > python ./cli.py CreateAsset --domain_id japan --precision 0 --asset_name yen"
         )
         print("\n")
 
