@@ -65,6 +65,12 @@ class ChiekuiCli:
         if cmd in self.commands:
             if "-h" in argv or "--help" in argv:
                 print(self.commands[cmd]["detail"])
+                print("-----------")
+                print("Arguments")
+                for name, opt in self.commands[cmd]["option"].items():
+                    print("- {:10s}: {:6}".format(name, opt["detail"]))
+
+                return
             else:
                 import getopt
                 expected = list(map(lambda x: x+"=", self.commands[cmd]["option"]))
