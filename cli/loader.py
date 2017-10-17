@@ -4,7 +4,7 @@ import yaml
 import sys
 BASE_NAME = "iroha-mizuki-cli"
 
-def load():
+def load(printInfo = False):
     import yaml
     import os
     try:
@@ -39,7 +39,8 @@ def load():
             print("[{}]  Require port in peer".format(BASE_NAME))
             raise
 
-        print("[{}] use config.yml data".format(BASE_NAME))
+        if printInfo:
+            print("[{}] use config.yml data".format(BASE_NAME))
     except yaml.YAMLError as exc:
         print("[{}] Error while parsing YAML file:".format(BASE_NAME))
         if hasattr(exc, 'problem_mark'):
