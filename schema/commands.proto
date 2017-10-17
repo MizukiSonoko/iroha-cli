@@ -1,0 +1,105 @@
+syntax = "proto3";
+package iroha.protocol;
+import "schema/primitive.proto";
+
+message AddAssetQuantity {
+    string account_id = 1;
+    string asset_id = 2;
+    Amount amount = 3;
+}
+
+message AddPeer {
+    string address = 1;
+    bytes peer_key = 2;
+}
+
+message AddSignatory {
+    string account_id = 1;
+    bytes public_key = 2;
+}
+
+message CreateAsset {
+    string asset_name = 1;
+    string domain_id = 2;
+    uint32 precision = 3;
+}
+
+message CreateAccount {
+    string account_name = 1;
+    string domain_id = 2;
+    bytes main_pubkey = 3;
+}
+
+message CreateDomain {
+    string domain_name = 1;
+}
+
+message RemoveSignatory {
+    string account_id = 1;
+    bytes public_key = 2;
+}
+
+message SetAccountPermissions {
+    string account_id = 1;
+    Permissions permissions = 2;
+}
+
+message SetAccountQuorum {
+    string account_id = 1;
+    uint32 quorum = 2;
+}
+
+message TransferAsset {
+    string src_account_id = 1;
+    string dest_account_id = 2;
+    string asset_id = 3;
+    string description = 4;
+    Amount amount = 5;
+}
+
+message AppendRole {
+    string account_id = 1;
+    string role_name = 2;
+}
+
+message CreateRole {
+    string role_name = 1;
+    repeated string permissions = 2;
+}
+
+message GrantPermission {
+    string account_id = 1;
+    string permission_name = 2;
+}
+
+message RevokePermission {
+    string account_id = 1;
+    string permission_name = 2;
+}
+
+message ExternalGuardian{
+    string account_id = 1;
+    string locked_asset_id = 2;
+    string unlocked_asset_id = 3;
+    Amount unit_amount = 4;
+}
+
+message Command {
+    oneof command {
+        AddAssetQuantity add_asset_quantity = 1;
+        AddPeer add_peer = 2;
+        AddSignatory add_signatory = 3;
+        CreateAsset create_asset = 4;
+        CreateAccount create_account = 5;
+        CreateDomain create_domain = 6;
+        RemoveSignatory remove_sign = 7;
+        SetAccountPermissions set_permission = 8;
+        SetAccountQuorum set_quorum = 9;
+        TransferAsset transfer_asset = 10;
+        AppendRole append_role = 11;
+        CreateRole create_role = 12;
+        GrantPermission grant_permission = 13;
+        RevokePermission revoke_permission = 14;
+        ExternalGuardian external_guardian = 15;
+    }
+}
