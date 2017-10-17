@@ -85,7 +85,11 @@ class ChiekuiCli:
                     print("generated command: {}".format(command))
                     tx = generateTransaction(self.name, [command])
                     if not network.sendTx(self.location, tx):
-                        print("Transaction is not arrived...\n")
+                        print(
+                            "Transaction is not arrived...\n"
+                            "Could you ckeck this => {}\n"
+                            .format(self.location)
+                        )
                 except Exception as e:
                     print(e.args[0])
                     print(e.with_traceback())
