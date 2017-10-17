@@ -5,7 +5,7 @@
 
 ## How to use
 
-0) Make `keypair` in this.
+#### 0) Make `keypair` in this.
 ```
 $ python ./cli.py  keygen --account_name mizuki
 ```
@@ -18,7 +18,7 @@ total 56
 ```
 
 
-1) Make `config.yml` in pwd
+#### 1) Make `config.yml` in pwd
 This file contains target peer information and my account info.
 ```config
 peer:
@@ -31,7 +31,7 @@ account:
 ```
 
 
-2) Check config is whether correct or not using `config`. 
+####  2) Check config is whether correct or not using `config`. 
 
 ```
 $ python cli.py config
@@ -47,7 +47,7 @@ $ python cli.py config
 
 ```
 
-3) Send tx like this
+#### 3) Send tx like this
 
 ```
 $ python ./cli.py CreateAsset --domain_id japan --precision 0 --asset_name yen
@@ -66,8 +66,14 @@ Could you ckeck this => localhost:50051
 ```
 I sent. (This error is expected, no problem)
 
-4) You can know optin using `-h` or `--help` command.
+#### 4) You can know optin using `-h` or `--help` command.
 
+In first, you can see all command use this.
+```
+python ./cli.py
+```
+
+In second, you can see detail of each command.
 ```
 $ python ./cli.py CreateAsset -h
 Create new asset in domain
