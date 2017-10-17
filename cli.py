@@ -22,25 +22,14 @@ class ChiekuiCli:
         self.commands = commands.commands
         self.Type     = commands.Type
         self.built_in = {
-            "push": {
-                "option": [],
-                "function": self.push,
-                "detail": "\n Push (built in) \n"
-                          "-----------\n"
-                          " Enter stack shell \n"
-                          " 1) Stack command. \n"
-                          " 2) 'pop' whenever you want\n"
-            },
-            "pop": {
-                "option": [],
-                "function": self.pop,
-                "detail": "\n Pop (built in) \n"
-                          "-----------\n"
-                          " Outer stack shell \n"
-                          " 1) Stack command. \n"
-                          " 2) 'pop' whenever you want\n"
+            "config": {
+                "option": {},
+                "function": self.config,
+                "detail": " Print current state \n"
+                          "   - name\n"
+                          "   - publicKey\n"
+                          "   - privateKey\n"
             }
-
         }
 
         commandNames = self.commands.keys()
@@ -54,15 +43,27 @@ class ChiekuiCli:
         readline.set_completer(completer.ChiekuiCliBufferCompleter(opt).complete)
         readline.parse_and_bind('tab: complete')
 
-    def push(self):
-        pass
-
-    def pop(self):
-        pass
-
+    def config(self, argv):
+        print(
+            "\n"
+            "  Config  \n"
+            " =========\n"
+        )
+        print(" name      : {}".format(self.name))
+        print(" publicKey : {}".format(self.publicKey))
+        print(" privateKey: {}".format(self.privateKey[:5] + "**...**" + self.privateKey[-5:]))
+        print(" load from : {}".format(self.source))
+        print(" targetPeer: {}".format(self.location))
+        print("")
+        return None
     def exec_command(self, cmd, argv):
+        # Built in command is invoked in this
+        if cmd in self.built_in:
+            self.built_in[cmd]["function"]({})
+            return
 
-        if cmd in self.commands:
+        # Command is invoked in this
+        elif cmd in self.commands:
             if "-h" in argv or "--help" in argv:
                 print(self.commands[cmd]["detail"])
                 print("-----------")
@@ -98,6 +99,7 @@ class ChiekuiCli:
                         )
                 except Exception as e:
                     print(e.args[0])
+                    print(e.with_traceback())
                     return
                 return
         if cmd.lower() in ["quit", "bye", "finish", "exit", "end"]:
@@ -149,7 +151,22 @@ def main():
         if res:
             print(res)
     else:
-        print("How to use ToDo")
+        print(
+            "----------------\n"
+            "Iroha-mizuki-cli\n"
+            "----------------\n\n"
+            "Current support commands"
+        )
+        for cmd in cmdList.commands.keys():
+            print("  - {}".format(cmd))
+
+        print(
+              "\n"
+              "Sample:\n\n"
+              "  > python ./cli.py CreateAsset --domain_id japan --precision 0 --asset_name yen"
+        )
+        print("\n")
+
 
 if __name__ == "__main__":
     import logging

@@ -36,14 +36,6 @@ class CommandList:
     def __init__(self, printInfo=False):
         self.printInfo = printInfo
         self.commands = {
-            "config": {
-                "option": {},
-                "function": self.config,
-                "detail": " Print current state \n"
-                          "   - name\n"
-                          "   - publicKey\n"
-                          "   - privateKey\n"
-            },
             "AddAssetQuantity": {
                 "option": {
                     "account_id": {
@@ -166,24 +158,12 @@ class CommandList:
                         raise Exception("{} is float".format(item[0]))
                 else:
                     raise Exception("{} is str even if number, float".format(item[0]))
+
     def printTransaction(self, name, expected, argv):
         if self.printInfo:
             print("[{}] run {} ".format(BASE_NAME, name))
             for n in expected.keys():
                 print("- {}: {}".format(n, argv[n]))
-
-    def config(self, argv):
-        print(
-            "\n"
-            "  Config  \n"
-            " =========\n"
-        )
-        print(" name      : {}".format(self.name))
-        print(" publicKey : {}".format(self.publicKey))
-        print(" privateKey: {}".format(self.privateKey[:5] + "**...**" + self.privateKey[-5:]))
-        print(" load from : {}".format(self.source))
-        print("")
-        return None
 
     def AddAssetQuantity(self, argv):
         name = "AddAssetQuantity"
