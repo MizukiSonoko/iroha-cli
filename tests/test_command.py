@@ -120,10 +120,10 @@ class TestCreateAccount(unittest.TestCase):
         base_key = self.sample.sample_keypair_path
         if os.path.exists(base + ".pub"):
             os.remove(base + ".pub")
-            os.remove(base)
+            os.remove(base + ".pri")
         if os.path.exists(base_key + ".pub"):
             os.remove(base_key + ".pub")
-            os.remove(base_key)
+            os.remove(base_key + ".pri")
 
     def test_normal_no_keypair_command_generate(self):
         command = self.commands["CreateAccount"]["function"](
@@ -135,7 +135,7 @@ class TestCreateAccount(unittest.TestCase):
         self.assertTrue(command.create_account.account_name == self.sample.sample_account_name)
         self.assertTrue(command.create_account.domain_id == self.sample.sample_domain_id)
         kaypair_name = self.sample.sample_account_name +"@"+ self.sample.sample_domain_id
-        self.assertTrue(os.path.exists(kaypair_name+".pub") and os.path.exists(kaypair_name))
+        self.assertTrue(os.path.exists(kaypair_name+".pub") and os.path.exists(kaypair_name+".pri"))
 
     def test_normal_command_generate(self):
         command = self.commands["CreateAccount"]["function"](
@@ -147,7 +147,7 @@ class TestCreateAccount(unittest.TestCase):
         self.assertTrue(command.create_account)
         self.assertTrue(command.create_account.account_name == self.sample.sample_account_name)
         self.assertTrue(command.create_account.domain_id == self.sample.sample_domain_id)
-        self.assertTrue(os.path.exists(self.sample.sample_keypair_path+".pub") and os.path.exists(self.sample.sample_keypair_path))
+        self.assertTrue(os.path.exists(self.sample.sample_keypair_path+".pub") and os.path.exists(self.sample.sample_keypair_path+".pri"))
 
     def test_no_account_name_command_generate(self):
         try:
@@ -200,10 +200,10 @@ class TestCreateAccount(unittest.TestCase):
         base_key = self.sample.sample_keypair_path
         if os.path.exists(base + ".pub"):
             os.remove(base + ".pub")
-            os.remove(base)
+            os.remove(base + ".pri")
         if os.path.exists(base_key + ".pub"):
             os.remove(base_key + ".pub")
-            os.remove(base_key)
+            os.remove(base_key + ".pri")
 
     def test_normal_no_keypair_command_generate(self):
         command = self.commands["CreateAccount"]["function"](
@@ -215,7 +215,7 @@ class TestCreateAccount(unittest.TestCase):
         self.assertTrue(command.create_account.account_name == self.sample.sample_account_name)
         self.assertTrue(command.create_account.domain_id == self.sample.sample_domain_id)
         kaypair_name = self.sample.sample_account_name +"@"+ self.sample.sample_domain_id
-        self.assertTrue(os.path.exists(kaypair_name+".pub") and os.path.exists(kaypair_name))
+        self.assertTrue(os.path.exists(kaypair_name+".pub") and os.path.exists(kaypair_name+".pri"))
 
     def test_normal_command_generate(self):
         command = self.commands["CreateAccount"]["function"](
@@ -227,7 +227,7 @@ class TestCreateAccount(unittest.TestCase):
         self.assertTrue(command.create_account)
         self.assertTrue(command.create_account.account_name == self.sample.sample_account_name)
         self.assertTrue(command.create_account.domain_id == self.sample.sample_domain_id)
-        self.assertTrue(os.path.exists(self.sample.sample_keypair_path+".pub") and os.path.exists(self.sample.sample_keypair_path))
+        self.assertTrue(os.path.exists(self.sample.sample_keypair_path+".pub") and os.path.exists(self.sample.sample_keypair_path+".pri"))
 
     def test_no_account_name_command_generate(self):
         try:
