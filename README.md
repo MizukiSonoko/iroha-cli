@@ -1,6 +1,8 @@
 
 ## YAC: Yet Another Cli of Iroha
 
+[hyperledger/iroha](https://github.com/hyperledger/iroha) is open source, so I want to contribute it.
+
 ## How to use
 ToDo
 make config.yml in pwd
