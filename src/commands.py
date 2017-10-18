@@ -1,11 +1,10 @@
 import os
 from enum import Enum
 
-from schema.commands_pb2 import Command, CreateAsset, AddAssetQuantity, CreateAccount, CreateDomain, TransferAsset
-from schema.primitive_pb2 import Amount, uint256
 from src import crypto
-
 from src.exception import CliException
+from src.schema import Amount, uint256
+from src.schema import Command, CreateAsset, AddAssetQuantity, CreateAccount, CreateDomain, TransferAsset
 
 BASE_NAME = "iroha-mizuki-cli"
 

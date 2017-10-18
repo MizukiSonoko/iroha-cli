@@ -1,4 +1,4 @@
-include schema/*.proto
+include src/schema/*.proto
 include *.py
 include requirements.txt
 recursive-include tests *.py

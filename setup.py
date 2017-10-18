@@ -7,31 +7,33 @@ import sys
 
 import subprocess
 
+from distutils.command.build_py import build_py as _build_py
 
-def exec_generate_proto( protoc, source):
-    protoc_command = [protoc, "-I.", "--python_out=.", source]
+
+def exec_generate_proto(source):
+    protoc_command = ["python", "-m", "grpc_tools.protoc", "-I.", "--python_out=.", source]
     if subprocess.call(protoc_command) != 0:
         sys.exit(-1)
-    protoc_grpc_command = [protoc, "-I.", "--python_out=.", "--grpc_python_out =.", source]
+    protoc_grpc_command = ["python", "-m", "grpc_tools.protoc", "-I.", "--python_out=.", source]
     if subprocess.call(protoc_grpc_command) != 0:
         sys.exit(-1)
 
 
-class GeneratePb(distutils.command.install_data.install_data):
+class GeneratePb(_build_py):
     def run(self):
-        protoc = "python3 -m grpc_tools.protoc"
-        exec_generate_proto(protoc,'schema/block.proto')
-        exec_generate_proto(protoc,'schema/commands.proto')
-        exec_generate_proto(protoc,'schema/endpoint.proto')
-        exec_generate_proto(protoc,'schema/primitive.proto')
-        exec_generate_proto(protoc,'schema/queries.proto')
-        exec_generate_proto(protoc,'schema/responses.proto')
-
-
+        sys.stdout.write("Generate *_pb2.py ...")
+        base_path = "src/schema/"
+        exec_generate_proto(base_path+'block.proto')
+        exec_generate_proto(base_path+'commands.proto')
+        exec_generate_proto(base_path+'endpoint.proto')
+        exec_generate_proto(base_path+'primitive.proto')
+        exec_generate_proto(base_path+'queries.proto')
+        exec_generate_proto(base_path+'responses.proto')
 
 
 if __name__ == '__main__':
-
+    print('---')
+    subprocess.call(["pwd"])
     setup(
           name='iroha-ya-cli',
           version='0.7',
@@ -40,7 +42,7 @@ if __name__ == '__main__':
           author_email='mizuki.sonoko@gmail.com',
           packages=['src'],
           data_files=[
-              ('schema', ["schema/*"])
+              ('share', ['README.md'])
           ],
           include_package_data=True,
           install_requires=[
@@ -52,7 +54,7 @@ if __name__ == '__main__':
                 'ed25519'
           ],
           cmdclass={
-            "generate_pb": GeneratePb
+            'build_py': GeneratePb,
           },
           entry_points={
           'console_scripts':

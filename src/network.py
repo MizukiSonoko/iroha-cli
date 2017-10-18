@@ -1,12 +1,11 @@
 import datetime
 
 import grpc
-from schema.block_pb2 import Transaction
-from schema.primitive_pb2 import Signature
 
-import src.crypto
-from schema.endpoint_pb2_grpc import CommandServiceStub
 from src import crypto
+from src.schema import CommandServiceStub
+from src.schema import Signature
+from src.schema import Transaction
 
 
 def generateTransaction(account_id, commands, key_pair):
