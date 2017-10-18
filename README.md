@@ -116,7 +116,7 @@ python -m unittest discover
 # Compile protofile 
 git clone https://github.com/MizukiSonoko/iroha-cli.git
 cd iroha-cli
-docker run -it -v  $(pwd):/opt/iroha-mizuki-cli mizukisonoko/alpine-grpc-protobuf sh -c  "cd /opt/iroha-mizuki-cli; ls schema/*.proto | xargs -I{} sh -c 'protoc -I=./ --python_out=./src {}; protoc -I=./ --python_out=./src --grpc_out=./src --plugin=protoc-gen-grpc=`which grpc_python_plugin` {}'"
+docker run -it -v  $(pwd):/opt/iroha-mizuki-cli mizukisonoko/alpine-grpc-protobuf sh -c  "cd /opt/iroha-mizuki-cli; ls schema/*.proto | xargs -I{} sh -c 'protoc -I=./ --python_out=./ {}; protoc -I=./ --python_out=./ --grpc_out=./ --plugin=protoc-gen-grpc=`which grpc_python_plugin` {}'"
 pip install -r requirements.txt 
 ```
 
