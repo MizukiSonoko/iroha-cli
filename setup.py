@@ -40,7 +40,7 @@ if __name__ == '__main__':
           description='Cli for hyperledger/iroha',
           author='Sonoko Mizuki',
           author_email='mizuki.sonoko@gmail.com',
-          packages=['src'],
+          packages=['cli'],
           include_package_data=True,
           install_requires=[
                 'grpcio',
@@ -56,6 +56,6 @@ if __name__ == '__main__':
           },
           entry_points={
           'console_scripts':
-            ['iroha-ya-cli=src.main:main']
+            ['iroha-ya-cli=cli.main:main']
           },
     )
