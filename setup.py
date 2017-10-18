@@ -10,12 +10,12 @@ from distutils.command.build_py import build_py as _build_py
 from setuptools import setup
 
 def exec_generate_proto(source):
-    protoc_command = ["python3", "-m", "grpc_tools.protoc", "-I.", "--python_out=..", source]
+    protoc_command = ["python", "-m", "grpc_tools.protoc", "-I.", "--python_out=..", source]
     if subprocess.call(protoc_command) != 0:
         sys.exit(-1)
     sys.stdout.write("Generate {}_pb2.py ==> successfull\n".format(source.split('.')[0]))
 
-    protoc_grpc_command = ["python3", "-m", "grpc_tools.protoc", "-I.", "--python_out=..","--grpc_python_out=..", source]
+    protoc_grpc_command = ["python", "-m", "grpc_tools.protoc", "-I.", "--python_out=..","--grpc_python_out=..", source]
     if subprocess.call(protoc_grpc_command) != 0:
         sys.exit(-1)
     sys.stdout.write("Generate {}_grcp_pb2.py ==> successfull\n".format(source.split('.')[0]))

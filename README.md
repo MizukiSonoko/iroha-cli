@@ -3,6 +3,16 @@
 
 [hyperledger/iroha](https://github.com/hyperledger/iroha) is open source, I want to contribute to it...  
 
+## Simple install
+
+```
+$ git clone https://github.com/MizukiSonoko/iroha-cli.git
+$ cd iroha-cli
+$ pip install -r requirements.txt # Required compiling proto file
+$ python setup.py build
+$ python setup.py develop # I want to `python setup.py install`...
+```
+
 ## How to use
 
 #### 0) Make `keypair` in this.
@@ -127,3 +137,16 @@ pip install -r requirements.txt
 - Python 3.5.0
 - protobuf + grpc [mizukisonoko/alpine-grpc-protobuf](https://github.com/MizukiSonoko/alpine-grpc-protobuf)
 
+
+
+## Tips
+
+It happens this
+```
+Running PyYAML-3.12/setup.py -q bdist_egg --dist-dir /tmp/easy_install-wwituzoz/PyYAML-3.12/egg-dist-tmp-kgc91i9t
+build/temp.linux-x86_64-3.5/check_libyaml.c:2:18: fatal error: yaml.h: No such file or directory
+compilation terminated.
+
+libyaml is not found or a compiler error: forcing --without-libyaml
+```
+=> `apt install -y libyaml-dev`
