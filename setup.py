@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+import distutils
 from distutils.core import setup
 from distutils.extension import Extension
 
@@ -17,7 +17,7 @@ def exec_generate_proto( protoc, source):
         sys.exit(-1)
 
 
-class GeneratePb:
+class GeneratePb(distutils.command.install_data.install_data):
     def run(self):
         protoc = "python3 -m grpc_tools.protoc"
         exec_generate_proto(protoc,'schema/block.proto')
