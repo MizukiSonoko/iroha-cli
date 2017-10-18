@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import distutils
-from distutils.core import setup
 from distutils.extension import Extension
 
 import sys
@@ -8,6 +7,10 @@ import os
 import subprocess
 
 from distutils.command.build_py import build_py as _build_py
+try:
+    from setuptools import setup, find_packages
+except ImportError:
+    from distutils.core import setup, find_packages
 
 
 def exec_generate_proto(source):
