@@ -28,6 +28,7 @@ class ChiekuiCli:
         self.printInfo = False
 
         self.commands = commands.commands
+        self.Type = commands.Type
         commandNames = self.commands.keys()
         opt = {}
         for name in commandNames:
@@ -50,10 +51,16 @@ class ChiekuiCli:
                 return True
             else:
                 import getopt
-                expected = list(map(lambda x: x + "=", self.commands[cmd]["option"]))
+                # I want to make it more simple....
+                expected = list(map(lambda x: x[0] + "=",
+                                list(filter(lambda o: o[1]['type'] != self.Type.NONE,self.commands[cmd]["option"].items()))
+                            ))
+                expected.extend(list(map(lambda x: x[0],
+                                list(filter(lambda o: o[1]['type'] == self.Type.NONE,self.commands[cmd]["option"].items()))
+                )))
                 try:
                     optlist, _ = getopt.getopt(argv, '', expected)
-                except getopt.GetoptError:
+                except getopt.GetoptError as e:
                     print("Maybe option is wrong, I required {}".format(expected))
                     return False
 
@@ -62,6 +69,7 @@ class ChiekuiCli:
                     for name in self.commands[cmd]["option"]:
                         if name == opt[0].split('--')[-1]:
                             new_argv[name] = opt[1]
+
                 try:
                     if cmd == "config":
                         if self.withoutConf:

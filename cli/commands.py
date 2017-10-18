@@ -1,6 +1,7 @@
 import os
 from enum import Enum
 
+
 from cli import crypto
 from cli.exception import CliException
 from primitive_pb2 import Amount, uint256
@@ -32,6 +33,7 @@ class CommandList:
         INT = 2
         UINT = 3
         FLOAT = 4
+        NONE = 5
 
     def __init__(self, printInfo=False):
         self.printInfo = printInfo
@@ -159,6 +161,11 @@ class CommandList:
                         "type": self.Type.STR,
                         "detail": "target's account name",
                         "required": True
+                    },
+                    "make_conf": {
+                        "type": self.Type.NONE,
+                        "detail": "generate conf.yml",
+                        "required": False
                     }
                 },
                 "function": self.keygen,
@@ -231,6 +238,24 @@ class CommandList:
             os.chmod(filename_base + ".pri", 0o400)
             pub.close()
             pri.close()
+
+
+            if "make_conf" in argv:
+                import yaml
+                conf_file = open("config.yml", "w")
+                conf_file.write(yaml.dump({
+                    "peer":{
+                        "address":"localhost",
+                        "port":50051
+                    },
+                    "account":{
+                        "publicKeyPath":filename_base + ".pub",
+                        "privateKeyPath":filename_base + ".pri",
+                        "name":filename_base
+                    }
+                }, default_flow_style=False))
+                conf_file.close()
+                print("Generate conf.yml!")
         except CliException as e:
             print(e)
             print("file error")
