@@ -7,8 +7,7 @@ import os
 import subprocess
 
 from distutils.command.build_py import build_py as _build_py
-from distutils.core import setup
-
+from setuptools import setup
 
 def exec_generate_proto(source):
     protoc_command = ["python3", "-m", "grpc_tools.protoc", "-I.", "--python_out=..", source]
@@ -31,7 +30,7 @@ class GeneratePb(_build_py):
         exec_generate_proto('primitive.proto')
         exec_generate_proto('queries.proto')
         exec_generate_proto('responses.proto')
-
+        _build_py.run(self)
 
 if __name__ == '__main__':
     setup(
@@ -57,5 +56,5 @@ if __name__ == '__main__':
           entry_points={
           'console_scripts':
             ['iroha-ya-cli=cli.main:main']
-          },
+          }
     )
