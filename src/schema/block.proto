@@ -1,7 +1,7 @@
 syntax = "proto3";
 package iroha.protocol;
-import "schema/commands.proto";
-import "schema/primitive.proto";
+import "commands.proto";
+import "primitive.proto";
 
 message Header {
   uint64 created_time = 1;

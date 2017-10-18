@@ -1,6 +1,6 @@
 syntax = "proto3";
 package iroha.protocol;
-import "schema/primitive.proto";
+import "primitive.proto";
 
 message AddAssetQuantity {
     string account_id = 1;

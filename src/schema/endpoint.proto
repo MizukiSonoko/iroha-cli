@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package iroha.protocol;
 
-import "schema/block.proto";
-import "schema/queries.proto";
+import "block.proto";
+import "queries.proto";
 import "google/protobuf/empty.proto";
-import "schema/responses.proto";
+import "responses.proto";
 
 
 enum TxStatus {

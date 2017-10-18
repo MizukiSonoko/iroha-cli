@@ -1,7 +1,7 @@
 syntax = "proto3";
 package iroha.protocol;
-import "schema/block.proto";
-import "schema/primitive.proto";
+import "block.proto";
+import "primitive.proto";
 
 // *** WSV data structure *** //
 message Asset {
