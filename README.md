@@ -34,7 +34,7 @@ account:
 ####  2) Check config is whether correct or not using `config`. 
 
 ```
-$ python cli.py config
+$ iroha-ya-cli config
 
   Config  
  =========
@@ -50,7 +50,7 @@ $ python cli.py config
 #### 3) Send tx like this
 
 ```
-$ python ./cli.py CreateAsset --domain_id japan --precision 0 --asset_name yen
+$ iroha-ya-cli CreateAsset --domain_id japan --precision 0 --asset_name yen
 generated command: create_asset {
   asset_name: "yen"
   domain_id: "japan"
