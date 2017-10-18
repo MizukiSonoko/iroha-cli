@@ -1,4 +1,3 @@
-import base64
 import ed25519
 import sha3
 import os

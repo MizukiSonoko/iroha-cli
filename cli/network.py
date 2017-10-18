@@ -2,7 +2,7 @@ import datetime
 
 import grpc
 
-from src import crypto
+from cli import crypto
 from endpoint_pb2_grpc import CommandServiceStub
 from primitive_pb2 import Signature
 from block_pb2 import Transaction

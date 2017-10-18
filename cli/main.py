@@ -3,11 +3,11 @@
 import sys
 import readline
 
-from src.exception import CliException
-from src.network import generateTransaction, sendTx
-import src.commands as commands
-import src.loader as loader
-import src.completer as completer
+from cli.exception import CliException
+from cli.network import generateTransaction, sendTx
+import cli.commands as commands
+import cli.loader as loader
+import cli.completer as completer
 
 BASE_NAME = "iroha-cli"
 
