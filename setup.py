@@ -27,29 +27,35 @@ class GeneratePb:
         exec_generate_proto(protoc,'schema/queries.proto')
         exec_generate_proto(protoc,'schema/responses.proto')
 
-setup(
-      name='iroha-ya-cli',
-      version='0.7',
-      description='Cli for hyperledger/iroha',
-      author='Sonoko Mizuki',
-      author_email='mizuki.sonoko@gmail.com',
-      packages=['src'],
-      data_files=[
-          ('schema', ["schema/*"])
-      ],
-      install_requires=[
-            'grpcio',
-            'grpcio-tools',
-            'protobuf',
 
-            'sha3',
-            'ed25519'
-      ],
-      cmdclass={
-        "generate_pb": GeneratePb
-      },
-      entry_points={
-      'console_scripts':
-            'iroha-ya-cli = src.main:main'
-      },
-)
+
+
+if __name__ == '__main__':
+
+    setup(
+          name='iroha-ya-cli',
+          version='0.7',
+          description='Cli for hyperledger/iroha',
+          author='Sonoko Mizuki',
+          author_email='mizuki.sonoko@gmail.com',
+          packages=['src'],
+          data_files=[
+              ('schema', ["schema/*"])
+          ],
+          include_package_data=True,
+          install_requires=[
+                'grpcio',
+                'grpcio-tools',
+                'protobuf',
+
+                'sha3',
+                'ed25519'
+          ],
+          cmdclass={
+            "generate_pb": GeneratePb
+          },
+          entry_points={
+          'console_scripts':
+                'iroha-ya-cli = src.main:main'
+          },
+    )
