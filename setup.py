@@ -7,10 +7,7 @@ import os
 import subprocess
 
 from distutils.command.build_py import build_py as _build_py
-try:
-    from setuptools import setup, find_packages
-except ImportError:
-    from distutils.core import setup, find_packages
+from distutils.core import setup
 
 
 def exec_generate_proto(source):
@@ -49,6 +46,7 @@ if __name__ == '__main__':
                 'grpcio',
                 'grpcio-tools',
                 'protobuf',
+                'PyYAML',
 
                 'sha3',
                 'ed25519'
