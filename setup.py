@@ -8,7 +8,6 @@ import subprocess
 
 from distutils.command.build_py import build_py as _build_py
 from distutils.core import setup
-from setuptools import find_packages
 
 
 def exec_generate_proto(source):
@@ -41,7 +40,7 @@ if __name__ == '__main__':
           description='Cli for hyperledger/iroha',
           author='Sonoko Mizuki',
           author_email='mizuki.sonoko@gmail.com',
-          packages=find_packages(),
+          packages=['src'],
           include_package_data=True,
           install_requires=[
                 'grpcio',
