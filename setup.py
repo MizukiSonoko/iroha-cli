@@ -9,6 +9,14 @@ setup(
       author='Sonoko Mizuki',
       author_email='mizuki.sonoko@gmail.com',
       packages=['src','schema'],
+      install_requires=[
+            'grpcio',
+            'grpcio-tools',
+            'protobuf',
+
+            'sha3',
+            'ed25519'
+      ],
       entry_points={
       'console_scripts':
             'iroha-ya-cli = src.main:main'
