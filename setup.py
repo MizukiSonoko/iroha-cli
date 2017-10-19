@@ -30,6 +30,7 @@ class GeneratePb(_build_py):
         exec_generate_proto('primitive.proto')
         exec_generate_proto('queries.proto')
         exec_generate_proto('responses.proto')
+        os.chdir("..")
         _build_py.run(self)
 
 if __name__ == '__main__':
