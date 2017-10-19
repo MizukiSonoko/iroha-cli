@@ -1,7 +1,15 @@
 
 ## YAC: Yet Another Cli of Iroha
-
+  
 [hyperledger/iroha](https://github.com/hyperledger/iroha) is open source, I want to contribute to it...  
+
+## Suppert version  
+
+- python2.7 => ToDo
+- python3.4 => ToDo
+- python3.5 => ⚪️ 
+- python3.6 => ToDo
+
 
 ## Simple install
 
@@ -17,7 +25,7 @@ $ python setup.py develop # I want to `python setup.py install`...
 
 #### 0) Make `keypair` and `config.yml` in this.
 ```
-$ iroha-ya-cli   keygen --account_name mizuki --make_conf
+$ iroha-ya-cli keygen --account_name mizuki --make_conf
 File not found : mizuki.pub or mizuki.pri 
 Without config mode
 Generate conf.yml!
@@ -82,7 +90,7 @@ Could you ckeck this => localhost:50051
 
 failed
 ```
-I sent. (This error is expected, no problem)
+I sent. (This error is expected, no problem 😅 😅 )
 
 #### 4) You can know optin using `-h` or `--help` command.
 
@@ -142,7 +150,6 @@ pip install -r requirements.txt
 
 
 ## Env
-- Python 3.5.0
 - protobuf + grpc [mizukisonoko/alpine-grpc-protobuf](https://github.com/MizukiSonoko/alpine-grpc-protobuf)
 
 
