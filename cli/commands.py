@@ -230,20 +230,28 @@ class CommandList:
             else:
                 filename_base = argv["account_name"]
 
-            pub = open(filename_base + ".pub", "w")
-            pub.write(pubKey.decode('utf-8'))
-            pri = open(filename_base + ".pri", "w")
-            pri.write(priKey.decode('utf-8'))
+            try:
+                with open(filename_base + ".pub", "w") as pub:
+                    pub.write(pubKey.decode('utf-8'))
+            except (OSError, IOError) as e:
+                print(e)
+                raise CliException("Cannot open : {name}".format(name=filename_base + ".pub"))
+
+            try:
+                with open(filename_base + ".pri", "w") as pri:
+                    pri.write(priKey.decode('utf-8'))
+            except (OSError, IOError) as e:
+                print(e)
+                raise CliException("Cannot open : {name}".format(name=filename_base + ".pri"))
+
             os.chmod(filename_base + ".pub", 0o400)
             os.chmod(filename_base + ".pri", 0o400)
-            pub.close()
-            pri.close()
 
 
             if "make_conf" in argv:
                 import yaml
-                conf_file = open("config.yml", "w")
-                conf_file.write(yaml.dump({
+                conf_path = "config.yaml"
+                dumped_conf = yaml.dump({
                     "peer":{
                         "address":"localhost",
                         "port":50051
@@ -253,9 +261,16 @@ class CommandList:
                         "privateKeyPath":filename_base + ".pri",
                         "name":filename_base
                     }
-                }, default_flow_style=False))
-                conf_file.close()
-                print("Generate conf.yml!")
+                }, default_flow_style=False)
+
+                try:
+                    with open(conf_path, "w") as conf_file:
+                        conf_file.write(dumped_conf)
+                except (OSError, IOError) as e:
+                    print(e)
+                    raise CliException("Cannot open : {name}".format(name=conf_path))
+
+                print("Generate {name}!".format(name=conf_path))
         except CliException as e:
             print(e)
             print("file error")
