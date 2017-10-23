@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-import distutils
-from distutils.extension import Extension
+from setuptools.extension import Extension
 
 import sys
 import os
 import subprocess
 
-from distutils.command.build_py import build_py as _build_py
+from setuptools.command.build_py import build_py as _build_py
 from setuptools import setup
 
 def exec_generate_proto(source):
@@ -43,6 +42,7 @@ if __name__ == '__main__':
           packages=['cli'],
           include_package_data=True,
           install_requires=[
+                'wheel',
                 'grpcio',
                 'grpcio-tools',
                 'protobuf',
