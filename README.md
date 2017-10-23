@@ -1,6 +1,7 @@
 
 ## YAC: Yet Another Cli of Iroha
-  
+[![CircleCI](https://circleci.com/gh/MizukiSonoko/iroha-cli.svg?style=shield)](https://circleci.com/gh/MizukiSonoko/iroha-cli)
+
 [hyperledger/iroha](https://github.com/hyperledger/iroha) is open source, I want to contribute to it...  
 
 ## Suppert version  
