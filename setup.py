@@ -42,7 +42,6 @@ if __name__ == '__main__':
           packages=['cli'],
           include_package_data=True,
           install_requires=[
-                'wheel',
                 'grpcio',
                 'grpcio-tools',
                 'protobuf',
