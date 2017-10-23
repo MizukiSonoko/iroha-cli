@@ -1,0 +1,17 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.5.4
+    steps:
+      - checkout
+
+      - run: python3 -m venv py3
+
+      - run: 
+          command: |
+            . py3/bin/activate
+            pip install -r ./requirements.txt
+            python setup.py build
+            tox
+
