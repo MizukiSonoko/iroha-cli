@@ -233,14 +233,14 @@ class CommandList:
 
             try:
                 with open(filename_base + ".pub", "w") as pub:
-                    pub.write(key_pair.public_key)
+                    pub.write(key_pair.public_key.decode())
             except (OSError, IOError) as e:
                 print(e)
                 raise CliException("Cannot open : {name}".format(name=filename_base + ".pub"))
 
             try:
                 with open(filename_base + ".pri", "w") as pri:
-                    pri.write(key_pair.private_key)
+                    pri.write(key_pair.private_key.decode())
             except (OSError, IOError) as e:
                 print(e)
                 raise CliException("Cannot open : {name}".format(name=filename_base + ".pri"))
@@ -323,9 +323,9 @@ class CommandList:
                 filename_base = argv["account_name"] + "@" + argv["domain_id"]
 
             pub = open(filename_base + ".pub", "w")
-            pub.write(key_pair.public_key)
+            pub.write(key_pair.public_key.decode())
             pri = open(filename_base + ".pri", "w")
-            pri.write(key_pair.private_key)
+            pri.write(key_pair.private_key.decode())
             pub.close()
             pri.close()
         except CliException as e:
