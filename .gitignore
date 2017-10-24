@@ -1,0 +1,13 @@
+*_pb2.py
+*_pb2_grpc.py
+*.proto.bak
+.DS_Store
+.gitignore
+.idea/
+*.egg-info/
+iroha-mizuki-cli/schema/
+lib/
+**__pycache__**
+.tox
+
+# python3 -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. primitive.proto
