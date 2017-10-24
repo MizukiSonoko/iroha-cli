@@ -1,13 +1,14 @@
 import os
 from enum import Enum
 
-
+import binascii
 from cli import crypto
 from cli.exception import CliException
 from primitive_pb2 import Amount, uint256
 from commands_pb2 import Command, CreateAsset, AddAssetQuantity, CreateAccount, CreateDomain, TransferAsset
 
 BASE_NAME = "iroha-mizuki-cli"
+
 
 class CommandList:
     """
@@ -200,7 +201,7 @@ class CommandList:
                 print("- {}: {}".format(n, argv[n]))
 
 
-            # =============================================
+                # =============================================
 
     def config(self, argv):
         print(
@@ -223,7 +224,7 @@ class CommandList:
         self.validate(argv_info, argv)
         self.printTransaction(name, argv_info, argv)
 
-        pubKey, priKey = crypto.generate_keypair_hex()
+        key_pair = crypto.generate_keypair()
         try:
             if "keypair_name" in argv:
                 filename_base = argv["keypair_name"]
@@ -232,14 +233,14 @@ class CommandList:
 
             try:
                 with open(filename_base + ".pub", "w") as pub:
-                    pub.write(pubKey.decode('utf-8'))
+                    pub.write(key_pair.public_key)
             except (OSError, IOError) as e:
                 print(e)
                 raise CliException("Cannot open : {name}".format(name=filename_base + ".pub"))
 
             try:
                 with open(filename_base + ".pri", "w") as pri:
-                    pri.write(priKey.decode('utf-8'))
+                    pri.write(key_pair.private_key)
             except (OSError, IOError) as e:
                 print(e)
                 raise CliException("Cannot open : {name}".format(name=filename_base + ".pri"))
@@ -247,19 +248,18 @@ class CommandList:
             os.chmod(filename_base + ".pub", 0o400)
             os.chmod(filename_base + ".pri", 0o400)
 
-
             if "make_conf" in argv:
                 import yaml
                 conf_path = "config.yaml"
                 dumped_conf = yaml.dump({
-                    "peer":{
-                        "address":"localhost",
-                        "port":50051
+                    "peer": {
+                        "address": "localhost",
+                        "port": 50051
                     },
-                    "account":{
-                        "publicKeyPath":filename_base + ".pub",
-                        "privateKeyPath":filename_base + ".pri",
-                        "name":filename_base
+                    "account": {
+                        "publicKeyPath": filename_base + ".pub",
+                        "privateKeyPath": filename_base + ".pri",
+                        "name": filename_base
                     }
                 }, default_flow_style=False)
 
@@ -280,8 +280,8 @@ class CommandList:
                 print(
                     "key save publicKey -> {} privateKey -> {}".format(filename_base + ".pub", filename_base))
                 print("key save publicKey:{} privateKey:{}".format(
-                    pubKey[:5] + "..." + pubKey[-5:],
-                    priKey[:5] + "**...**" + priKey[-5:],
+                    key_pair.public_key[:5] + "..." + key_pair.public_key[-5:],
+                    key_pair.private_key[:5] + "**...**" + key_pair.private_key[-5:],
                 ))
             return None
 
@@ -314,7 +314,7 @@ class CommandList:
 
         # ToDo validate and print check
         # I want to auto generate
-        pubKey, priKey = crypto.generate_keypair_hex()
+        key_pair = crypto.generate_keypair()
         try:
 
             if "keypair_name" in argv:
@@ -323,9 +323,9 @@ class CommandList:
                 filename_base = argv["account_name"] + "@" + argv["domain_id"]
 
             pub = open(filename_base + ".pub", "w")
-            pub.write(pubKey.decode('utf-8'))
+            pub.write(key_pair.public_key)
             pri = open(filename_base + ".pri", "w")
-            pri.write(priKey.decode('utf-8'))
+            pri.write(key_pair.private_key)
             pub.close()
             pri.close()
         except CliException as e:
@@ -337,13 +337,13 @@ class CommandList:
                 print(
                     "key save publicKey -> {} privateKey -> {}".format(filename_base + ".pub", filename_base))
                 print("key save publicKey:{} privateKey:{}".format(
-                    pubKey[:5] + "..." + pubKey[-5:],
-                    priKey[:5] + "**...**" + priKey[-5:],
+                    key_pair.public_key[:5] + "..." + key_pair.public_key[-5:],
+                    key_pair.private_key[:5] + "**...**" + key_pair.private_key[-5:],
                 ))
         return Command(create_account=CreateAccount(
             account_name=argv["account_name"],
             domain_id=argv["domain_id"],
-            main_pubkey=pubKey
+            main_pubkey=binascii.hexlify(key_pair.raw_public_key)
         ))
 
     def CreateAsset(self, argv):
