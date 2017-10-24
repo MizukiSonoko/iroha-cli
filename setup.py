@@ -1,14 +1,12 @@
 #!/usr/bin/env python
-import distutils
-from distutils.extension import Extension
+from setuptools.extension import Extension
 
 import sys
 import os
 import subprocess
 
-from distutils.command.build_py import build_py as _build_py
-from setuptools import setup, find_packages
-
+from setuptools.command.build_py import build_py as _build_py
+from setuptools import setup
 
 def exec_generate_proto(source):
     protoc_command = ["python", "-m", "grpc_tools.protoc", "-I.", "--python_out=.", source]
@@ -36,6 +34,7 @@ class GeneratePb(_build_py):
         exec_generate_proto('primitive.proto')
         exec_generate_proto('queries.proto')
         exec_generate_proto('responses.proto')
+        os.chdir("..")
         _build_py.run(self)
 
 if __name__ == '__main__':
@@ -47,7 +46,7 @@ if __name__ == '__main__':
           author='Sonoko Mizuki',
           license='Apache',
           author_email='mizuki.sonoko@gmail.com',
-          packages=find_packages(),
+          packages = ['cli', 'schema'],
           ext_modules=[module_ed25519_sha3],
           include_package_data=True,
           install_requires=[

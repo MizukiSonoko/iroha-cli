@@ -15,33 +15,39 @@ $ python setup.py develop # I want to `python setup.py install`...
 
 ## How to use
 
-#### 0) Make `keypair` in this.
+#### 0) Make `keypair` and `config.yml` in this.
 ```
-$ iroha-ya-cli  keygen --account_name mizuki
+$ iroha-ya-cli   keygen --account_name mizuki --make_conf
+File not found : mizuki.pub or mizuki.pri 
+Without config mode
+Generate conf.yml!
+success full
 ```
+
 Result
 ```
-$ ls -lth | head  -n 3
-total 56
--r--------   1 mizuki  staff    64B Oct 17 18:00 mizuki.pri
--r--------   1 mizuki  staff    64B Oct 17 18:00 mizuki.pub
+$ ls -lth | head  -n 4
+total 424
+-rw-r--r--   1 mizuki  staff   122B Oct 19 13:45 config.yml
+-r--------   1 mizuki  staff    64B Oct 19 13:45 mizuki.pri
+-r--------   1 mizuki  staff    64B Oct 19 13:45 mizuki.pub
 ```
 
 
-#### 1) Make `config.yml` in pwd
+#### 1) Change information in generated `config.yml` 
 This file contains target peer information and my account info.
 ```config
-peer:
-    address:    localhost
-    port:       50051
 account:
-    publicKeyPath:  mizuki.pub
-    privateKeyPath: mizuki.pri
-    name:           mizuki
+  name: mizuki
+  privateKeyPath: mizuki.pri
+  publicKeyPath: mizuki.pub
+peer:
+  address: localhost
+  port: 50051
 ```
+Peer is target where cli send tx to. I guess Iroha uses grpc, so port is 50051.
 
-
-####  2) Check config is whether correct or not using `config`. 
+####  2) Check config is whether correct or not using `config` command. 
 
 ```
 $ iroha-ya-cli config
@@ -55,6 +61,7 @@ $ iroha-ya-cli config
  load from : config.yml
  targetPeer: localhost:50051
 
+success full
 ```
 
 #### 3) Send tx like this
@@ -73,6 +80,7 @@ generated command: create_asset {
 Transaction is not arrived...
 Could you ckeck this => localhost:50051
 
+failed
 ```
 I sent. (This error is expected, no problem)
 
@@ -121,12 +129,12 @@ iroha-ya-cli CreateDomain --domain_name aizu
 python -m unittest discover
 ```
 
-## Prev
+## Develop
 ```
 # Compile protofile 
 git clone https://github.com/MizukiSonoko/iroha-cli.git
 cd iroha-cli
-docker run -it -v  $(pwd):/opt/iroha-mizuki-cli mizukisonoko/alpine-grpc-protobuf sh -c  "cd /opt/iroha-mizuki-cli/schema; ls *.proto | xargs -I{} sh -c 'protoc -I=./ --python_out=../src {}; protoc -I=./ --python_out=../src --grpc_out=../src --plugin=protoc-gen-grpc=`which grpc_python_plugin` {}'"
+docker run -it -v  $(pwd):/opt/iroha-mizuki-cli mizukisonoko/alpine-grpc-protobuf sh -c  "cd /opt/iroha-mizuki-cli/schema; ls *.proto | xargs -I{} sh -c 'protoc -I=./ --python_out=../ {}; protoc -I=./ --python_out=../ --grpc_out=../ --plugin=protoc-gen-grpc=`which grpc_python_plugin` {}'"
 pip install -r requirements.txt 
 ```
 
