@@ -31,3 +31,6 @@ def sign(key_pair, message):
 
 def verify_ed25519_sha3(pub_key, sig, message):
     return verify_ed25519_sha3(pub_key, sig, message)
+
+def sha3_256(message):
+    return sha3.sha3_256(message).hexdigest()
