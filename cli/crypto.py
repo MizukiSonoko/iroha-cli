@@ -1,21 +1,33 @@
-import ed25519
+import base64
+
 import sha3
 import os
 
-def generate_keypair_hex():
-    h = sha3.sha3_256()
-    h.update(os.urandom(87))
-    signing_key, verifying_key = ed25519.create_keypair()
-    return (
-        signing_key.to_ascii(encoding="hex"),
-        verifying_key.to_ascii(encoding="hex")
-    )
+from collections import namedtuple
 
-def sign(priKey, message):
-    return ed25519.SigningKey(priKey.encode('utf-8')).sign( message, encoding="hex")
+from cli.crypto_ed25519_sha3 import generate_keypair_ed25519_sha3, sign_ed25519_sha3
 
 
-def hash(msg):
-    h = sha3.sha3_256()
-    h.update(msg)
-    return h.hexdigest()
+class KeyPair(namedtuple('KeyPair', ['raw_private_key', 'raw_public_key'])):
+    def encode(self, value):
+        return base64.b64encode(value)
+
+    @property
+    def private_key(self):
+        return self.encode(self.raw_private_key)
+
+    @property
+    def public_key(self):
+        return self.encode(self.raw_public_key)
+
+
+def generate_keypair():
+    return generate_keypair_ed25519_sha3()
+
+
+def sign(key_pair, message):
+    return sign_ed25519_sha3(key_pair, message)
+
+
+def verify_ed25519_sha3(pub_key, sig, message):
+    return verify_ed25519_sha3(pub_key, sig, message)
