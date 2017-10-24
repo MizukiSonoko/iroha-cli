@@ -7,18 +7,24 @@ import os
 import subprocess
 
 from distutils.command.build_py import build_py as _build_py
-from setuptools import setup
+from setuptools import setup, find_packages
+
 
 def exec_generate_proto(source):
-    protoc_command = ["python", "-m", "grpc_tools.protoc", "-I.", "--python_out=..", source]
+    protoc_command = ["python", "-m", "grpc_tools.protoc", "-I.", "--python_out=.", source]
     if subprocess.call(protoc_command) != 0:
         sys.exit(-1)
     sys.stdout.write("Generate {}_pb2.py ==> successfull\n".format(source.split('.')[0]))
 
-    protoc_grpc_command = ["python", "-m", "grpc_tools.protoc", "-I.", "--python_out=..","--grpc_python_out=..", source]
+    protoc_grpc_command = ["python", "-m", "grpc_tools.protoc", "-I.", "--python_out=.","--grpc_python_out=.", source]
     if subprocess.call(protoc_grpc_command) != 0:
         sys.exit(-1)
     sys.stdout.write("Generate {}_grcp_pb2.py ==> successfull\n".format(source.split('.')[0]))
+
+
+sources = ["iroha/ed25519_sha3/ed25519_sha3module.c"]
+sources.extend(["iroha/ed25519_sha3/lib/" + s for s in os.listdir("iroha/ed25519_sha3/lib/") if s.endswith(".c")])
+module_ed25519_sha3 = Extension("ed25519_sha3",include_dirs=["iroha/ed25519_sha3/lib/"], sources=sources)
 
 
 class GeneratePb(_build_py):
@@ -34,12 +40,15 @@ class GeneratePb(_build_py):
 
 if __name__ == '__main__':
     setup(
+
           name='iroha-ya-cli',
           version='0.7',
           description='Cli for hyperledger/iroha',
           author='Sonoko Mizuki',
+          license='Apache',
           author_email='mizuki.sonoko@gmail.com',
-          packages=['cli'],
+          packages=find_packages(),
+          ext_modules=[module_ed25519_sha3],
           include_package_data=True,
           install_requires=[
                 'grpcio',
