@@ -20,7 +20,7 @@ def exec_generate_proto(source):
     sys.stdout.write("Generate {}_grcp_pb2.py ==> successfull\n".format(source.split('.')[0]))
 
 
-ed25519_sha3_path = os.getcwd() + "/cli/ed25519_sha3/"
+ed25519_sha3_path = "cli/ed25519_sha3/"
 sources = [ed25519_sha3_path+"ed25519_sha3module.c"]
 sources.extend([ed25519_sha3_path+"lib/" + s for s in os.listdir(ed25519_sha3_path+"lib/") if s.endswith(".c")])
 module_ed25519_sha3 = Extension("ed25519_sha3",include_dirs=[ed25519_sha3_path+"lib/"], sources=sources)
