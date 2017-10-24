@@ -5,9 +5,6 @@ import os
 
 from collections import namedtuple
 
-from cli.crypto_ed25519_sha3 import generate_keypair_ed25519_sha3, sign_ed25519_sha3
-
-
 class KeyPair(namedtuple('KeyPair', ['raw_private_key', 'raw_public_key'])):
     def encode(self, value):
         return base64.b64encode(value)
@@ -21,6 +18,9 @@ class KeyPair(namedtuple('KeyPair', ['raw_private_key', 'raw_public_key'])):
         return self.encode(self.raw_public_key)
 
 
+
+from cli.crypto_ed25519_sha3 import generate_keypair_ed25519_sha3, sign_ed25519_sha3
+
 def generate_keypair():
     return generate_keypair_ed25519_sha3()
 
@@ -31,3 +31,6 @@ def sign(key_pair, message):
 
 def verify_ed25519_sha3(pub_key, sig, message):
     return verify_ed25519_sha3(pub_key, sig, message)
+
+def sha3_256(message):
+    return sha3.sha3_256(message).hexdigest()

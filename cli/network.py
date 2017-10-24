@@ -15,7 +15,7 @@ def generateTransaction(account_id, commands, key_pair):
         tx_counter=0,
         created_time=int(datetime.datetime.now().timestamp() * 1000)
     )
-    payload_hash = crypto.hash((payload.SerializeToString()))
+    payload_hash = crypto.sha3_256(payload.SerializeToString())
     sign = crypto.sign(key_pair["privateKey"], payload_hash)
     return Transaction(
         payload=payload,

@@ -1,8 +1,6 @@
 grpcio
 grpcio-tools
 protobuf
-sha3
-ed25519
 PyYAML
 tox
 wheel
