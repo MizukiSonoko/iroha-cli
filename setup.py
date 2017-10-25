@@ -64,7 +64,7 @@ if __name__ == '__main__':
           classifiers=[
              'Programming Language :: Python :: 3.5',
 
-             'Development Status :: 3 - Alpha',
+             'Development Status :: 4 - Beta',
 
              'License :: OSI Approved :: Apache Software License',
              'Topic :: Utilities'
