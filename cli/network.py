@@ -21,7 +21,7 @@ def generateTransaction(account_id, commands, key_pair):
     tx = Transaction(
         payload=payload,
         signature=[
-            Signature(pubkey=binascii.hexlify(key_pair.raw_public_key),signature=binascii.hexlify(sign))
+            Signature(pubkey=key_pair.raw_public_key,signature=sign)
         ]
     )
     print(tx)
