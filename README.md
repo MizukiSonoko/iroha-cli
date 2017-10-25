@@ -2,6 +2,8 @@
 ## YAC: Yet Another Cli of Iroha
 [![CircleCI](https://circleci.com/gh/MizukiSonoko/iroha-cli.svg?style=shield)](https://circleci.com/gh/MizukiSonoko/iroha-cli)
 
+[![PyPI version](https://badge.fury.io/py/iroha-ya-cli.svg)](https://badge.fury.io/py/iroha-ya-cli)
+
 [hyperledger/iroha](https://github.com/hyperledger/iroha) is open source, I want to contribute to it...  
 
 ## Suppert version  
@@ -15,11 +17,7 @@
 ## Simple install
 
 ```
-$ git clone https://github.com/MizukiSonoko/iroha-cli.git
-$ cd iroha-cli
-$ pip install -r requirements.txt # Required compiling proto file
-$ python setup.py build
-$ python setup.py develop # I want to `python setup.py install`...
+$ pip install iroha-ya-cli
 ```
 
 ## How to use

@@ -40,7 +40,6 @@ class GeneratePb(_build_py):
 
 if __name__ == '__main__':
     setup(
-
           name='iroha-ya-cli',
           version='0.7',
           description='Cli for hyperledger/iroha',
@@ -62,6 +61,14 @@ if __name__ == '__main__':
           cmdclass={
             'build_py': GeneratePb,
           },
+          classifiers=[
+             'Programming Language :: Python :: 3.5',
+
+             'Development Status :: 3 - Alpha',
+
+             'License :: OSI Approved :: Apache Software License',
+             'Topic :: Utilities'
+          ],
           entry_points={
           'console_scripts':
             ['iroha-ya-cli=cli.main:main']
