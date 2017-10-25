@@ -1,22 +1,16 @@
-
-#ifndef SHA512_H
-#define SHA512_H
-
-#include <stddef.h>
-
-#include "fixedint.h"
-
-/* state */
-typedef struct sha512_context_ {
-    uint64_t  length, state[8];
-    size_t curlen;
-    unsigned char buf[128];
-} sha512_context;
+#include "ed25519.h"
+#include "sha512.h"
+#include "ge.h"
 
 
-int sha512_init(sha512_context * md);
-int sha512_final(sha512_context * md, unsigned char *out);
-int sha512_update(sha512_context * md, const unsigned char *in, size_t inlen);
-int sha512(const unsigned char *message, size_t message_len, unsigned char *out);
+void ed25519_create_keypair(unsigned char *public_key, unsigned char *private_key, const unsigned char *seed) {
+    ge_p3 A;
 
-#endif
+    sha512(seed, 32, private_key);
+    private_key[0] &= 248;
+    private_key[31] &= 63;
+    private_key[31] |= 64;
+
+    ge_scalarmult_base(&A, private_key);
+    ge_p3_tobytes(public_key, &A);
+}
