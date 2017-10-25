@@ -69,13 +69,13 @@ static PyMethodDef myMethods[] = {
 
 struct PyModuleDef myModule = {
       PyModuleDef_HEAD_INIT,
-      "ed25519_sha3",
+      "cli_ed25519",
       NULL,
       -1,
       myMethods
 };
 
-PyObject* PyInit_ed25519_sha3(void) {
+PyObject* PyInit_cli_ed25519(void) {
     return PyModule_Create(&myModule);
 }
 

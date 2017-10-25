@@ -3,6 +3,7 @@
 import sys
 import readline
 
+from cli.crypto import KeyPair
 from cli.exception import CliException
 from cli.network import generateTransaction, sendTx
 import cli.commands as commands
@@ -19,7 +20,8 @@ class ChiekuiCli:
             self.withoutConf = False
             self.location = res["location"]
             self.name = res["name"]
-            self.key_pair = {"publicKey": res["publicKey"], "privateKey": res["privateKey"]}
+
+            self.key_pair = KeyPair(raw_private_key=KeyPair.decode(res["privateKey"]), raw_public_key=KeyPair.decode(res["publicKey"]))
         except CliException as e:
             print(e.args[0])
             print("Without config mode")
@@ -77,8 +79,8 @@ class ChiekuiCli:
                             return False
                         self.commands[cmd]["function"](
                             {"name":self.name,
-                             "publicKey":self.key_pair["publicKey"],
-                             "privateKey":self.key_pair["privateKey"],
+                             "publicKey":self.key_pair.public_key,
+                             "privateKey":self.key_pair.private_key,
                              "location":self.location
                             }
                         )
