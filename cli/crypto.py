@@ -28,7 +28,7 @@ class KeyPair(namedtuple('KeyPair', ['raw_private_key', 'raw_public_key'])):
         return self.__encode__(self.raw_public_key)
 
 
-from cli.crypto_ed25519 import generate_keypair_ed25519, sign_ed25519
+from cli.crypto_ed25519 import generate_keypair_ed25519, sign_ed25519, verify_ed25519
 
 
 def generate_keypair():
@@ -39,9 +39,9 @@ def sign(key_pair, message):
     return base64.b64decode(sign_ed25519(key_pair, message))
 
 
-def verify_ed25519_sha3(pub_key, sig, message):
-    return verify_ed25519_sha3(pub_key, sig, message)
+def verify(pub_key, sig, message):
+    return verify_ed25519(pub_key, sig, message)
 
 
 def sha3_256(message):
-    return sha3.sha3_256(message).hexdigest()
+    return sha3.sha3_256(message).digest()

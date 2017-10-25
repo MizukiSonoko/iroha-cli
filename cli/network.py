@@ -1,3 +1,4 @@
+import base64
 import datetime
 
 import binascii
@@ -24,7 +25,6 @@ def generateTransaction(account_id, commands, key_pair):
             Signature(pubkey=key_pair.raw_public_key,signature=sign)
         ]
     )
-    print(tx)
     return tx
 
 
