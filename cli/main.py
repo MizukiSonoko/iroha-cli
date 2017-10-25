@@ -133,10 +133,9 @@ def handler(signal, frame):
     sys.exit(0)
 
 
-def main():
+def main(argv = sys.argv):
     printInfo = False
     import signal
-    argv = sys.argv
     cmdList = commands.CommandList()
     c = ChiekuiCli(cmdList, printInfo)
     if len(argv) == 2 and argv[-1] == "--interactive":
@@ -169,10 +168,10 @@ def main():
 
 if __name__ == "__main__":
     import logging
-
+    argv = sys.argv
     LOG_FILENAME = '/tmp/{}_cli.log'.format(BASE_NAME)
     logging.basicConfig(
         filename=LOG_FILENAME,
         level=logging.DEBUG,
     )
-    main()
+    main(argv)

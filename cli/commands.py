@@ -250,8 +250,8 @@ class CommandList:
                 print(e)
                 raise CliException("Cannot open : {name}".format(name=filename_base + ".pri"))
 
-            os.chmod(filename_base + ".pub", 0o400)
-            os.chmod(filename_base + ".pri", 0o400)
+            #os.chmod(filename_base + ".pub", 0o400)
+            #os.chmod(filename_base + ".pri", 0o400)
 
             if "make_conf" in argv:
                 import yaml
