@@ -14,16 +14,6 @@ BASE_NAME = "iroha-cli"
 
 class ChiekuiCli:
     def __init__(self, commands, printInfo=False):
-        try:
-            res = loader.load(printInfo)
-            self.withoutConf = False
-            self.location = res["location"]
-            self.name = res["name"]
-            self.key_pair = {"publicKey": res["publicKey"], "privateKey": res["privateKey"]}
-        except CliException as e:
-            print(e.args[0])
-            print("Without config mode")
-            self.withoutConf = True
 
         self.printInfo = False
 
@@ -58,6 +48,7 @@ class ChiekuiCli:
                 expected.extend(list(map(lambda x: x[0],
                                 list(filter(lambda o: o[1]['type'] == self.Type.NONE,self.commands[cmd]["option"].items()))
                 )))
+                expected.append('config=')
                 try:
                     optlist, _ = getopt.getopt(argv, '', expected)
                 except getopt.GetoptError as e:
@@ -65,10 +56,23 @@ class ChiekuiCli:
                     return False
 
                 new_argv = {}
+                file_path = None
                 for opt in optlist:
                     for name in self.commands[cmd]["option"]:
                         if name == opt[0].split('--')[-1]:
                             new_argv[name] = opt[1]
+                    if opt[0] == "--config":
+                        file_path = opt[1]
+                try:
+                    res = loader.load(file_path, self.printInfo)
+                    self.withoutConf = False
+                    self.location = res["location"]
+                    self.name = res["name"]
+                    self.key_pair = {"publicKey": res["publicKey"], "privateKey": res["privateKey"]}
+                except CliException as e:
+                    print(e.args[0])
+                    print("Without config mode")
+                    self.withoutConf = True
 
                 try:
                     if cmd == "config":

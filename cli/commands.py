@@ -163,6 +163,11 @@ class CommandList:
                         "detail": "target's account name",
                         "required": True
                     },
+                    "keypair_name":{
+                        "type": self.Type.STR,
+                        "detail": "keypairt prefix",
+                        "required": False
+                    },
                     "make_conf": {
                         "type": self.Type.NONE,
                         "detail": "generate conf.yml",
