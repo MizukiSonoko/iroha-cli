@@ -2,7 +2,7 @@ import os
 from enum import Enum
 
 import binascii
-from cli import crypto
+from cli import crypto, file_io
 from cli.exception import CliException
 from primitive_pb2 import Amount, uint256
 from commands_pb2 import Command, CreateAsset, AddAssetQuantity, CreateAccount, CreateDomain, TransferAsset
@@ -77,63 +77,22 @@ class BuildInCommand:
         self.printTransaction(name, argv_info, argv)
 
         key_pair = crypto.generate_keypair()
-        try:
-            if "keypair_name" in argv:
-                filename_base = argv["keypair_name"]
-            else:
-                filename_base = argv["account_name"]
-
-            try:
-                with open(filename_base + ".pub", "w") as pub:
-                    pub.write(key_pair.public_key.decode())
-            except (OSError, IOError) as e:
-                print(e)
-                raise CliException("Cannot open : {name}".format(name=filename_base + ".pub"))
-
-            try:
-                with open(filename_base + ".pri", "w") as pri:
-                    pri.write(key_pair.private_key.decode())
-            except (OSError, IOError) as e:
-                print(e)
-                raise CliException("Cannot open : {name}".format(name=filename_base + ".pri"))
-
-            os.chmod(filename_base + ".pub", 0o400)
-            os.chmod(filename_base + ".pri", 0o400)
-
-            if "make_conf" in argv:
-                import yaml
-                conf_path = "config.yaml"
-                dumped_conf = yaml.dump({
-                    "peer": {
-                        "address": "localhost",
-                        "port": 50051
-                    },
-                    "account": {
-                        "publicKeyPath": filename_base + ".pub",
-                        "privateKeyPath": filename_base + ".pri",
-                        "name": filename_base
-                    }
-                }, default_flow_style=False)
-
-                try:
-                    with open(conf_path, "w") as conf_file:
-                        conf_file.write(dumped_conf)
-                except (OSError, IOError) as e:
-                    print(e)
-                    raise CliException("Cannot open : {name}".format(name=conf_path))
-
-                print("Generate {name}!".format(name=conf_path))
-        except CliException as e:
-            print(e)
-            print("file error")
-            return None
+        if "keypair_name" in argv:
+            filename_base = argv["keypair_name"]
         else:
-            if self.printInfo:
-                print(
-                    "key save publicKey -> {} privateKey -> {}".format(filename_base + ".pub", filename_base))
-                print("key save publicKey:{} privateKey:{}".format(
-                    key_pair.public_key[:5] + "..." + key_pair.public_key[-5:],
-                    key_pair.private_key[:5] + "**...**" + key_pair.private_key[-5:],
-                ))
-            return None
+            filename_base = argv["account_name"]
+        file_io.save_keypair(filename_base, key_pair)
+
+        if "make_conf" in argv:
+            file_io.save_config(filename_base,{
+                "peer": {
+                    "address": "localhost",
+                    "port": 50051
+                },
+                "account": {
+                    "publicKeyPath": filename_base + ".pub",
+                    "privateKeyPath": filename_base + ".pri",
+                    "name": filename_base
+                }
+            })
 

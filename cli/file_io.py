@@ -3,11 +3,10 @@ from cli.exception import CliException
 
 BASE_NAME = "iroha-mizuki-cli"
 
-
-def load(filepath):
+def load_config(file_path):
     import yaml
     try:
-        data = yaml.load(open(filepath, "r"), yaml.SafeLoader)
+        data = yaml.load(open(file_path, "r"), yaml.SafeLoader)
         account = data["account"]
         peer = data["peer"]
 
@@ -60,5 +59,34 @@ def load(filepath):
             print("[{}] Something went wrong while parsing yaml file".format(BASE_NAME))
             sys.exit(1)
     except FileNotFoundError as e:
-        print("[{}] Not found config.yml in {}".format(BASE_NAME, filepath))
+        print("[{}] Not found config.yml in {}".format(BASE_NAME, file_path))
         sys.exit(1)
+
+
+def save_config(filename_base, data):
+    import yaml
+    conf_path = "config.yaml"
+    dumped_conf = yaml.dump(data, default_flow_style=False)
+
+    try:
+        with open(conf_path, "w") as conf_file:
+            conf_file.write(dumped_conf)
+    except (OSError, IOError) as e:
+        print(e)
+        raise CliException("Cannot open : {name}".format(name=conf_path))
+
+
+def save_keypair(filename_base, key_pair):
+    try:
+        with open(filename_base + ".pub", "w") as pub:
+            pub.write(key_pair.public_key.decode())
+    except (OSError, IOError) as e:
+        print(e)
+        raise CliException("Cannot open : {name}".format(name=filename_base + ".pub"))
+
+    try:
+        with open(filename_base + ".pri", "w") as pub:
+            pub.write(key_pair.public_key.decode())
+    except (OSError, IOError) as e:
+        print(e)
+        raise CliException("Cannot open : {name}".format(name=filename_base + ".pri"))

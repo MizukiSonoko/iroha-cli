@@ -2,7 +2,7 @@ import os
 from enum import Enum
 
 import binascii
-from cli import crypto
+from cli import crypto, file_io
 from cli.exception import CliException
 from primitive_pb2 import Amount, uint256
 from commands_pb2 import Command, CreateAsset, AddAssetQuantity, CreateAccount, CreateDomain, TransferAsset
@@ -268,31 +268,12 @@ class CommandList:
         # ToDo validate and print check
         # I want to auto generate
         key_pair = crypto.generate_keypair()
-        try:
-
-            if "keypair_name" in argv and argv["keypair_name"]:
-                filename_base = argv["keypair_name"]
-            else:
-                filename_base = argv["account_name"] + "@" + argv["domain_id"]
-
-            pub = open(filename_base + ".pub", "w")
-            pub.write(key_pair.public_key.decode())
-            pri = open(filename_base + ".pri", "w")
-            pri.write(key_pair.private_key.decode())
-            pub.close()
-            pri.close()
-        except CliException as e:
-            print(e)
-            print("file error")
-            return None
+        if "keypair_name" in argv and argv["keypair_name"]:
+            filename_base = argv["keypair_name"]
         else:
-            if self.printInfo:
-                print(
-                    "key save publicKey -> {} privateKey -> {}".format(filename_base + ".pub", filename_base))
-                print("key save publicKey:{} privateKey:{}".format(
-                    key_pair.public_key[:5] + "..." + key_pair.public_key[-5:],
-                    key_pair.private_key[:5] + "**...**" + key_pair.private_key[-5:],
-                ))
+            filename_base = argv["account_name"] + "@" + argv["domain_id"]
+
+        file_io.save_keypair(filename_base, key_pair)
         return Command(create_account=CreateAccount(
             account_name=argv["account_name"],
             domain_id=argv["domain_id"],
