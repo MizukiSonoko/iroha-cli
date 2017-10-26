@@ -3,42 +3,28 @@ from cli.exception import CliException
 
 BASE_NAME = "iroha-mizuki-cli"
 
-def load(printInfo = False):
+
+def load(filepath):
     import yaml
     try:
-        data = yaml.load(open("config.yml", "r"), yaml.SafeLoader)
-        if not "account" in data:
-            raise CliException("Require account dict in confid.yml")
-
-        if not "peer" in data:
-            raise CliException("Require peer dict in confid.yml")
-
-        name = data["account"].get("name")
-        publicKeyPath = data["account"].get("publicKeyPath")
-        privateKeyPath = data["account"].get("privateKeyPath")
-        if not name:
-            raise CliException("Require name in account in confid.yml")
-        if not publicKeyPath:
-            raise CliException("Require publicKey in account in confid.yml")
+        data = yaml.load(open(filepath, "r"), yaml.SafeLoader)
+        account = data["account"]
+        peer = data["peer"]
 
         try:
-            publicKey = open( publicKeyPath, "r").read()
-            privateKey = open( privateKeyPath, "r").read()
+            publicKey = open(data["account"].get("publicKeyPath"), "r").read()
+            privateKey = open(data["account"].get("privateKeyPath"), "r").read()
         except FileNotFoundError:
-            raise CliException("File not found : {} or {} ".format(publicKeyPath ,privateKeyPath))
+            raise CliException("File not found : {} or {} ".format(
+                data["account"].get("publicKeyPath"), data["account"].get("privateKeyPath")))
 
-        if not privateKeyPath:
-            raise CliException("Require privateKey in account in confid.yml")
-
-        address = data["peer"].get("address")
-        port = data["peer"].get("port")
-        if not address:
-            raise CliException("Require address in peer in confid.yml")
-        if not port:
-            raise CliException("Require port(int) in peer in confid.yml")
-
-        if printInfo:
-            print("[{}] use config.yml data".format(BASE_NAME))
+        return {
+            "name": account.get("name"),
+            "publicKey": publicKey,
+            "privateKey": privateKey,
+            "address": peer.get("address"),
+            "port": peer.get("port")
+        }
     except yaml.YAMLError as exc:
         print("[{}] Error while parsing YAML file:".format(BASE_NAME))
         if hasattr(exc, 'problem_mark'):
@@ -74,12 +60,5 @@ def load(printInfo = False):
             print("[{}] Something went wrong while parsing yaml file".format(BASE_NAME))
             sys.exit(1)
     except FileNotFoundError as e:
-        print("[{}] Could you make config.yml in current directory".format(BASE_NAME))
+        print("[{}] Not found config.yml in {}".format(BASE_NAME, filepath))
         sys.exit(1)
-    else:
-        return {
-            "name": name,
-            "publicKey": publicKey,
-            "privateKey": privateKey,
-            "location": address +":" + str(port)
-        }
