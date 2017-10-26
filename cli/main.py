@@ -10,7 +10,7 @@ from cli.commands import CommandList
 from cli.crypto import KeyPair
 from cli.exception import CliException
 from cli.network import generateTransaction, sendTx
-import cli.loader as loader
+import cli.file_io as file_io
 import cli.completer as completer
 from cliff.app import App
 from cliff.commandmanager import CommandManager
@@ -27,7 +27,7 @@ class ChiekuiCli:
             self.name,\
             self.public_key,\
             self.private_key,\
-            address, port = loader.load(filepath)
+            address, port = file_io.load_config(filepath)
 
             self.location = "{}:{}".format(address,str(port))
             self.key_pair = KeyPair(
@@ -80,7 +80,7 @@ class ChiekuiCli:
 
     def exec_tx(self, cmd, argv):
         loader.load(argv.config)
-        command = self.cli_commands[cmd]["function"](vars(argv))
+        command = self.tx_commands[cmd]["function"](vars(argv))
         if command:
             tx = generateTransaction(self.context.name, [command], self.context.key_pair)
             if not sendTx(self.context.location, tx):
