@@ -29,12 +29,6 @@ class CommandList:
             ExternalGuardian external_guardian = 15;
     """
 
-    class Type(Enum):
-        STR = 1
-        INT = 2
-        UINT = 3
-        FLOAT = 4
-        NONE = 5
 
     def __init__(self, printInfo=False):
         self.printInfo = printInfo
@@ -42,17 +36,17 @@ class CommandList:
             "AddAssetQuantity": {
                 "option": {
                     "account_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "target's account id like mizuki@domain",
                         "required": True
                     },
                     "asset_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "target's asset id like japan/yen",
                         "required": True
                     },
                     "amount": {
-                        "type": self.Type.FLOAT,
+                        "type": float,
                         "detail": "target's asset id like japan/yen",
                         "required": True
                     },
@@ -63,17 +57,17 @@ class CommandList:
             "CreateAccount": {
                 "option": {
                     "account_name": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "account name like mizuki",
                         "required": True
                     },
                     "domain_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "new account will be in this domain like japan",
                         "required": True
                     },
                     "keypair_name": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "save to this keypair_name like mizukey, if no set, generates ${"
                                   "account_name}.pub/${account_name} ",
                         "required": False
@@ -85,7 +79,7 @@ class CommandList:
             "CreateDomain": {
                 "option": {
                     "domain_name": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "new domain name like japan",
                         "required": True
                     }
@@ -96,17 +90,17 @@ class CommandList:
             "CreateAsset": {
                 "option": {
                     "asset_name": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "asset name like mizuki",
                         "required": True
                     },
                     "domain_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "new account will be in this domain like japan",
                         "required": True
                     },
                     "precision": {
-                        "type": self.Type.INT,
+                        "type": int,
                         "detail": "how much support .000, default 0",
                         "required": False
                     }
@@ -117,27 +111,27 @@ class CommandList:
             "TransferAsset": {
                 "option": {
                     "src_account_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "current owner's account name like mizuki@japan",
                         "required": True
                     },
                     "dest_account_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "next owner's account name like iori@japan",
                         "required": True
                     },
                     "asset_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "managed asset's name like yen",
                         "required": True
                     },
                     "description": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "attach some text",
                         "required": False
                     },
                     "amount": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "how much transfer",
                         "required": True
                     }
@@ -147,52 +141,13 @@ class CommandList:
             }
         }
 
-        self.built_in = {
-            "config": {
-                "option": {},
-                "function": self.config,
-                "detail": " Print current state \n"
-                          "   - name\n"
-                          "   - publicKey\n"
-                          "   - privateKey\n"
-            },
-            "keygen": {
-                "option": {
-                    "account_name": {
-                        "type": self.Type.STR,
-                        "detail": "target's account name",
-                        "required": True
-                    },
-                    "make_conf": {
-                        "type": self.Type.NONE,
-                        "detail": "generate conf.yml",
-                        "required": False
-                    }
-                },
-                "function": self.keygen,
-                "detail": " Print current state \n"
-                          "   - name\n"
-                          "   - publicKey\n"
-                          "   - privateKey\n"
-            }
-        }
-        self.commands.update(self.built_in)
-
     def validate(self, expected, argv):
         for item in expected.items():
             if item[1]["required"] and not item[0] in argv:
                 raise CliException("{} is required".format(item[0]))
             if item[0] in argv:
-                if isinstance(argv[item[0]], str):
-                    if item[1]["type"] == self.Type.INT and not argv[item[0]].replace("-", "").isdigit():
-                        raise CliException("{} is integer".format(item[0]))
-                    if item[1]["type"] == self.Type.UINT and not argv[item[0]].isdigit():
-                        raise CliException("{} is unsigned integer".format(item[0]))
-                    if item[1]["type"] == self.Type.FLOAT and not argv[item[0]].replace("-", "").replace(".",
-                                                                                                         "").isdigit():
-                        raise CliException("{} is float".format(item[0]))
-                else:
-                    raise CliException("{} is str even if number, float".format(item[0]))
+                if type(argv[item[0]]) != item[1]["type"]:
+                    raise CliException("{} is {}".format(item[0],str(item[1]["type"])))
 
     def printTransaction(self, name, expected, argv):
         if self.printInfo:
@@ -200,8 +155,6 @@ class CommandList:
             for n in expected.keys():
                 print("- {}: {}".format(n, argv[n]))
 
-
-                # =============================================
 
     def config(self, argv):
         print(
@@ -317,7 +270,7 @@ class CommandList:
         key_pair = crypto.generate_keypair()
         try:
 
-            if "keypair_name" in argv:
+            if "keypair_name" in argv and argv["keypair_name"]:
                 filename_base = argv["keypair_name"]
             else:
                 filename_base = argv["account_name"] + "@" + argv["domain_id"]
