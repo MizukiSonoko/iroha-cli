@@ -1,24 +1,16 @@
 #! /usr/bin/python
 
 import sys
-import readline
-
 import argparse
 
 from cli.built_in_commands import BuildInCommand
 from cli.commands import CommandList
 from cli.crypto import KeyPair
-from cli.exception import CliException
 from cli.network import generateTransaction, sendTx
 import cli.file_io as file_io
-import cli.completer as completer
-from cliff.app import App
-from cliff.commandmanager import CommandManager
-from cliff.command import Command
 
 BASE_NAME = "iroha-cli"
 TARGET = "iroha"
-
 
 class ChiekuiCli:
 
