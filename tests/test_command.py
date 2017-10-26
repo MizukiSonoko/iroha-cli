@@ -23,46 +23,6 @@ class Sample:
         self.sample_account_name = "mizuki"
         self.sample_keypair_path = "mizuki_key"
 
-
-class TestKeygen(unittest.TestCase):
-
-    def setUp(self):
-        self.commands = commands.CommandList().commands
-        self.sample = Sample()
-
-    def tearDown(self):
-        base = self.sample.sample_account_name + "@" + self.sample.sample_domain_id
-        base_key = self.sample.sample_keypair_path
-        if os.path.exists(base + ".pub"):
-            os.remove(base + ".pub")
-            os.remove(base + ".pri")
-        if os.path.exists(base_key + ".pub"):
-            os.remove(base_key + ".pub")
-            os.remove(base_key + ".pri")
-
-    def test_normal_with_account_name(self):
-        command = self.commands["keygen"]["function"](
-            {"account_name": self.sample.sample_account_name}
-        )
-        self.assertTrue(os.path.exists(self.sample.sample_account_name+".pub") and os.path.exists(self.sample.sample_account_name+".pri"))
-
-    def test_normal_with_keypair_name(self):
-        command = self.commands["keygen"]["function"](
-            {"account_name": self.sample.sample_account_name,
-            "keypair_name": self.sample.sample_keypair_path}
-        )
-        self.assertTrue(os.path.exists(self.sample.sample_keypair_path+".pub") and os.path.exists(self.sample.sample_keypair_path+".pri"))
-
-    def test_error_no_account_name(self):
-        try:
-            self.commands["keygen"]["function"]({
-                "keypair_name": self.sample.sample_keypair_path
-            })
-        except CliException:
-            pass
-        else:
-            self.fail()
-
 class TestAddAssetQuantity(unittest.TestCase):
 
     def setUp(self):
@@ -73,7 +33,7 @@ class TestAddAssetQuantity(unittest.TestCase):
         command = self.commands["AddAssetQuantity"]["function"](
             {"account_id": self.sample.sample_account_id_1,
              "asset_id": self.sample.sample_asset_id_1,
-             "amount": "10.0"
+             "amount": 10.0
              }
         )
         self.assertTrue(command.add_asset_quantity)
@@ -86,7 +46,7 @@ class TestAddAssetQuantity(unittest.TestCase):
             self.commands["AddAssetQuantity"]["function"](
                 {
                     "asset_id": self.sample.sample_asset_id_1,
-                    "amount": "10.0"
+                    "amount": 10.0
                 }
             )
         except CliException as e:
@@ -99,7 +59,7 @@ class TestAddAssetQuantity(unittest.TestCase):
             self.commands["AddAssetQuantity"]["function"](
                 {
                     "account_id": self.sample.sample_account_id_1,
-                    "amount": "10.0"
+                    "amount": 10.0
                 }
             )
         except CliException as e:
@@ -126,11 +86,11 @@ class TestAddAssetQuantity(unittest.TestCase):
                 {
                     "account_id": 123,
                     "asset_id": self.sample.sample_asset_id_1,
-                    "amount": "10.0"
+                    "amount": 10.0
                 }
             )
         except CliException as e:
-            self.assertTrue(e.args[0] == "account_id is str even if number, float")
+            self.assertTrue(e.args[0] == "account_id is <class 'str'>")
         else:
             self.fail("I want to exception")
 
@@ -144,7 +104,7 @@ class TestAddAssetQuantity(unittest.TestCase):
                 }
             )
         except CliException as e:
-            self.assertTrue(e.args[0] == "amount is str even if number, float")
+            self.assertTrue(e.args[0] == "amount is <class 'float'>")
         else:
             self.fail("I want to exception")
 
@@ -209,7 +169,7 @@ class TestCreateAccount(unittest.TestCase):
                  }
             )
         except CliException as e:
-            self.assertTrue(e.args[0] == "account_name is str even if number, float")
+            self.assertTrue(e.args[0] == "account_name is <class 'str'>")
         else:
             self.fail("I want to exception")
 
@@ -223,7 +183,7 @@ class TestCreateAccount(unittest.TestCase):
                  }
             )
         except CliException as e:
-            self.assertTrue(e.args[0] == "keypair_name is str even if number, float")
+            self.assertTrue(e.args[0] == "keypair_name is <class 'str'>")
         else:
             self.fail("I want to exception")
 

@@ -1,23 +1,30 @@
 
 ## YAC: Yet Another Cli of Iroha
+[![CircleCI](https://circleci.com/gh/MizukiSonoko/iroha-cli.svg?style=shield)](https://circleci.com/gh/MizukiSonoko/iroha-cli)
+
+[![PyPI version](https://badge.fury.io/py/iroha-ya-cli.svg)](https://badge.fury.io/py/iroha-ya-cli)
 
 [hyperledger/iroha](https://github.com/hyperledger/iroha) is open source, I want to contribute to it...  
+
+## Suppert version  
+
+- python2.7 => ToDo
+- python3.4 => ToDo
+- python3.5 => ⚪️ 
+- python3.6 => ToDo
+
 
 ## Simple install
 
 ```
-$ git clone https://github.com/MizukiSonoko/iroha-cli.git
-$ cd iroha-cli
-$ pip install -r requirements.txt # Required compiling proto file
-$ python setup.py build
-$ python setup.py develop # I want to `python setup.py install`...
+$ pip install iroha-ya-cli
 ```
 
 ## How to use
 
 #### 0) Make `keypair` and `config.yml` in this.
 ```
-$ iroha-ya-cli   keygen --account_name mizuki --make_conf
+$ iroha-ya-cli keygen --account_name mizuki --make_conf
 File not found : mizuki.pub or mizuki.pri 
 Without config mode
 Generate conf.yml!
@@ -82,7 +89,7 @@ Could you ckeck this => localhost:50051
 
 failed
 ```
-I sent. (This error is expected, no problem)
+I sent. (This error is expected, no problem 😅 😅 )
 
 #### 4) You can know optin using `-h` or `--help` command.
 
@@ -142,7 +149,6 @@ pip install -r requirements.txt
 
 
 ## Env
-- Python 3.5.0
 - protobuf + grpc [mizukisonoko/alpine-grpc-protobuf](https://github.com/MizukiSonoko/alpine-grpc-protobuf)
 
 
