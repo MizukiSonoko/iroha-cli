@@ -16,10 +16,13 @@ class ChiekuiCli:
 
     class Context:
         def __init__(self, filepath):
+            conf = file_io.load_config(filepath)
+            if not conf:
+                return
             self.name,\
             self.public_key,\
             self.private_key,\
-            address, port = file_io.load_config(filepath)
+            address, port = conf
 
             self.location = "{}:{}".format(address,str(port))
             self.key_pair = KeyPair(
@@ -50,7 +53,7 @@ class ChiekuiCli:
         # parse: built in command
         for cmd_name, cmd_val in self.built_in_commands.items():
             _parser = _sub_parser.add_parser(cmd_name, help='{} help'.format(cmd_name))
-            for name, val in self.cli_commands[cmd]['option'].items():
+            for name, val in self.built_in_commands[cmd_name]['option'].items():
                 _parser.add_argument("--{}".format(name), type=val["type"], required=val["required"],help=val["detail"])
 
 
@@ -71,7 +74,7 @@ class ChiekuiCli:
         sys.exit(0)
 
     def exec_tx(self, cmd, argv):
-        loader.load(argv.config)
+        file_io.load(argv.config)
         command = self.tx_commands[cmd]["function"](vars(argv))
         if command:
             tx = generateTransaction(self.context.name, [command], self.context.key_pair)
@@ -91,7 +94,7 @@ class ChiekuiCli:
         parsed_argv = self.parser.parse_args(argv[1:])
         if len(argv) < 3:
             self.print_introduction()
-        self.context = self.Context(parsed_argv.config)
+        self.context = self.Context(vars(parsed_argv).get('config'))
         if argv[1] == 'tx':
             self.exec_tx(argv[2], parsed_argv)
         elif argv[1] == 'query':

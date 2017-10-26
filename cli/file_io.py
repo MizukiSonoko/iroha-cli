@@ -4,6 +4,9 @@ from cli.exception import CliException
 BASE_NAME = "iroha-mizuki-cli"
 
 def load_config(file_path):
+    if not file_path:
+        return None
+
     import yaml
     try:
         data = yaml.load(open(file_path, "r"), yaml.SafeLoader)
