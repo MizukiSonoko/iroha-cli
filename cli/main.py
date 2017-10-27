@@ -6,6 +6,7 @@ import argparse
 from cli.built_in_commands import BuildInCommand
 from cli.commands import CommandList
 from cli.crypto import KeyPair
+from cli.exception import CliException
 from cli.network import generateTransaction, sendTx, generateQuery, sendQuery
 import cli.file_io as file_io
 from cli.query import QueryList
@@ -116,12 +117,11 @@ class ChiekuiCli:
         qry = self.queries[qry]["function"](vars(argv))
         if qry:
             query = generateQuery(self.context.name, qry, self.context.key_pair)
-            if not sendQuery(self.context.location, query):
-                print(
-                    "Transaction is not arrived...\n"
-                    "Could you ckeck this => {}\n".format(self.context.location)
-                )
-                return False
+            try:
+                res = sendQuery(self.context.location, query)
+                print(res)
+            except CliException as e:
+                print(e.message)
         else:
             print("Err")
 
