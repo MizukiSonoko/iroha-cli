@@ -2,7 +2,7 @@ import os
 from enum import Enum
 
 import binascii
-from cli import crypto
+from cli import crypto, file_io
 from cli.exception import CliException
 from primitive_pb2 import Amount, uint256
 from commands_pb2 import Command, CreateAsset, AddAssetQuantity, CreateAccount, CreateDomain, TransferAsset
@@ -29,30 +29,23 @@ class CommandList:
             ExternalGuardian external_guardian = 15;
     """
 
-    class Type(Enum):
-        STR = 1
-        INT = 2
-        UINT = 3
-        FLOAT = 4
-        NONE = 5
-
     def __init__(self, printInfo=False):
         self.printInfo = printInfo
         self.commands = {
             "AddAssetQuantity": {
                 "option": {
                     "account_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "target's account id like mizuki@domain",
                         "required": True
                     },
                     "asset_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "target's asset id like japan/yen",
                         "required": True
                     },
                     "amount": {
-                        "type": self.Type.FLOAT,
+                        "type": float,
                         "detail": "target's asset id like japan/yen",
                         "required": True
                     },
@@ -63,17 +56,17 @@ class CommandList:
             "CreateAccount": {
                 "option": {
                     "account_name": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "account name like mizuki",
                         "required": True
                     },
                     "domain_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "new account will be in this domain like japan",
                         "required": True
                     },
                     "keypair_name": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "save to this keypair_name like mizukey, if no set, generates ${"
                                   "account_name}.pub/${account_name} ",
                         "required": False
@@ -85,7 +78,7 @@ class CommandList:
             "CreateDomain": {
                 "option": {
                     "domain_name": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "new domain name like japan",
                         "required": True
                     }
@@ -96,17 +89,17 @@ class CommandList:
             "CreateAsset": {
                 "option": {
                     "asset_name": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "asset name like mizuki",
                         "required": True
                     },
                     "domain_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "new account will be in this domain like japan",
                         "required": True
                     },
                     "precision": {
-                        "type": self.Type.INT,
+                        "type": int,
                         "detail": "how much support .000, default 0",
                         "required": False
                     }
@@ -117,27 +110,27 @@ class CommandList:
             "TransferAsset": {
                 "option": {
                     "src_account_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "current owner's account name like mizuki@japan",
                         "required": True
                     },
                     "dest_account_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "next owner's account name like iori@japan",
                         "required": True
                     },
                     "asset_id": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "managed asset's name like yen",
                         "required": True
                     },
                     "description": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "attach some text",
                         "required": False
                     },
                     "amount": {
-                        "type": self.Type.STR,
+                        "type": str,
                         "detail": "how much transfer",
                         "required": True
                     }
@@ -147,61 +140,22 @@ class CommandList:
             }
         }
 
-        self.built_in = {
-            "config": {
-                "option": {},
-                "function": self.config,
-                "detail": " Print current state \n"
-                          "   - name\n"
-                          "   - publicKey\n"
-                          "   - privateKey\n"
-            },
-            "keygen": {
-                "option": {
-                    "account_name": {
-                        "type": self.Type.STR,
-                        "detail": "target's account name",
-                        "required": True
-                    },
-                    "make_conf": {
-                        "type": self.Type.NONE,
-                        "detail": "generate conf.yml",
-                        "required": False
-                    }
-                },
-                "function": self.keygen,
-                "detail": " Print current state \n"
-                          "   - name\n"
-                          "   - publicKey\n"
-                          "   - privateKey\n"
-            }
-        }
-        self.commands.update(self.built_in)
-
     def validate(self, expected, argv):
         for item in expected.items():
             if item[1]["required"] and not item[0] in argv:
                 raise CliException("{} is required".format(item[0]))
             if item[0] in argv:
-                if isinstance(argv[item[0]], str):
-                    if item[1]["type"] == self.Type.INT and not argv[item[0]].replace("-", "").isdigit():
-                        raise CliException("{} is integer".format(item[0]))
-                    if item[1]["type"] == self.Type.UINT and not argv[item[0]].isdigit():
-                        raise CliException("{} is unsigned integer".format(item[0]))
-                    if item[1]["type"] == self.Type.FLOAT and not argv[item[0]].replace("-", "").replace(".",
-                                                                                                         "").isdigit():
-                        raise CliException("{} is float".format(item[0]))
-                else:
-                    raise CliException("{} is str even if number, float".format(item[0]))
+                if argv[item[0]] and type(argv[item[0]]) != item[1]["type"]:
+                    raise CliException("{} is {}".format(
+                        item[0],
+                        str(item[1]["type"])
+                    ))
 
     def printTransaction(self, name, expected, argv):
         if self.printInfo:
             print("[{}] run {} ".format(BASE_NAME, name))
             for n in expected.keys():
                 print("- {}: {}".format(n, argv[n]))
-
-
-                # =============================================
 
     def config(self, argv):
         print(
@@ -245,8 +199,8 @@ class CommandList:
                 print(e)
                 raise CliException("Cannot open : {name}".format(name=filename_base + ".pri"))
 
-            os.chmod(filename_base + ".pub", 0o400)
-            os.chmod(filename_base + ".pri", 0o400)
+            # os.chmod(filename_base + ".pub", 0o400)
+            # os.chmod(filename_base + ".pri", 0o400)
 
             if "make_conf" in argv:
                 import yaml
@@ -315,31 +269,12 @@ class CommandList:
         # ToDo validate and print check
         # I want to auto generate
         key_pair = crypto.generate_keypair()
-        try:
-
-            if "keypair_name" in argv:
-                filename_base = argv["keypair_name"]
-            else:
-                filename_base = argv["account_name"] + "@" + argv["domain_id"]
-
-            pub = open(filename_base + ".pub", "w")
-            pub.write(key_pair.public_key.decode())
-            pri = open(filename_base + ".pri", "w")
-            pri.write(key_pair.private_key.decode())
-            pub.close()
-            pri.close()
-        except CliException as e:
-            print(e)
-            print("file error")
-            return None
+        if "keypair_name" in argv and argv["keypair_name"]:
+            filename_base = argv["keypair_name"]
         else:
-            if self.printInfo:
-                print(
-                    "key save publicKey -> {} privateKey -> {}".format(filename_base + ".pub", filename_base))
-                print("key save publicKey:{} privateKey:{}".format(
-                    key_pair.public_key[:5] + "..." + key_pair.public_key[-5:],
-                    key_pair.private_key[:5] + "**...**" + key_pair.private_key[-5:],
-                ))
+            filename_base = argv["account_name"] + "@" + argv["domain_id"]
+
+        file_io.save_keypair(filename_base, key_pair)
         return Command(create_account=CreateAccount(
             account_name=argv["account_name"],
             domain_id=argv["domain_id"],
@@ -351,10 +286,11 @@ class CommandList:
         argv_info = self.commands[name]["option"]
         self.validate(argv_info, argv)
         self.printTransaction(name, argv_info, argv)
+        precision = argv.get("precision") if argv.get("precision") else 0
         return Command(create_asset=CreateAsset(
             asset_name=argv["asset_name"],
             domain_id=argv["domain_id"],
-            precision=int(argv.get("precision", 0))
+            precision= precision
         ))
 
     def CreateDomain(self, argv):

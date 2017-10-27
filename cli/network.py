@@ -1,5 +1,7 @@
+import base64
 import datetime
 
+import binascii
 import grpc
 
 from cli import crypto
@@ -12,15 +14,18 @@ def generateTransaction(account_id, commands, key_pair):
     payload = Transaction.Payload(
         commands=commands,
         creator_account_id=account_id,
-        tx_counter=0,
+        tx_counter=1,
         created_time=int(datetime.datetime.now().timestamp() * 1000)
     )
     payload_hash = crypto.sha3_256(payload.SerializeToString())
-    sign = crypto.sign(key_pair["privateKey"], payload_hash)
-    return Transaction(
+    sign = crypto.sign(key_pair, payload_hash)
+    tx = Transaction(
         payload=payload,
-        signature=[Signature(pubkey=key_pair["publicKey"].encode(),signature=sign)]
+        signature=[
+            Signature(pubkey=key_pair.raw_public_key,signature=sign)
+        ]
     )
+    return tx
 
 
 def sendTx(location, tx):

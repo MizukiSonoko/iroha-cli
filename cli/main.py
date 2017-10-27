@@ -1,174 +1,127 @@
 #! /usr/bin/python
 
 import sys
-import readline
+import argparse
 
-from cli.exception import CliException
+from cli.built_in_commands import BuildInCommand
+from cli.commands import CommandList
+from cli.crypto import KeyPair
 from cli.network import generateTransaction, sendTx
-import cli.commands as commands
-import cli.loader as loader
-import cli.completer as completer
+import cli.file_io as file_io
 
 BASE_NAME = "iroha-cli"
+TARGET = "iroha"
+
+
+class Context:
+    name = None
+    public_key = None
+    private_key = None
+    location = None
+    key_pair = None
+
+    def __init__(self, filepath):
+        conf = file_io.load_config(filepath)
+        if not conf:
+            self.loaded = False
+            return
+        self.loaded = True
+        self.name = conf.get('name')
+        self.public_key = conf.get('publicKey')
+        self.private_key = conf.get('privateKey')
+        address = conf.get('address')
+        port = conf.get('port')
+
+        self.location = "{}:{}".format(address, str(port))
+        self.key_pair = KeyPair(
+            raw_private_key=KeyPair.decode(self.private_key),
+            raw_public_key=KeyPair.decode(self.public_key))
 
 
 class ChiekuiCli:
-    def __init__(self, commands, printInfo=False):
-        try:
-            res = loader.load(printInfo)
-            self.withoutConf = False
-            self.location = res["location"]
-            self.name = res["name"]
-            self.key_pair = {"publicKey": res["publicKey"], "privateKey": res["privateKey"]}
-        except CliException as e:
-            print(e.args[0])
-            print("Without config mode")
-            self.withoutConf = True
 
-        self.printInfo = False
+    def __init__(self):
+        self.tx_commands = CommandList().commands
+        self.built_in_commands = BuildInCommand().commands
+        self.context =None
 
-        self.commands = commands.commands
-        self.Type = commands.Type
-        commandNames = self.commands.keys()
-        opt = {}
-        for name in commandNames:
-            opt[name] = list(map(lambda name: name, self.commands[name]["option"].keys())) + ["-h"]
+        # ================================
+        #              Parser
+        # ================================
+        self.parser = argparse.ArgumentParser(description='Cli of {}'.format(TARGET))
+        _sub_parser = self.parser.add_subparsers()
 
-        opt["quit"] = []
-        opt["bye"] = []
-        readline.set_completer(completer.ChiekuiCliBufferCompleter(opt).complete)
-        readline.parse_and_bind('tab: complete')
+        # parse: transaction
+        parse_tx = _sub_parser.add_parser("tx")
+        sup_parser_tx = parse_tx.add_subparsers()
+        for cmd in self.tx_commands:
+            _parser = sup_parser_tx.add_parser(cmd, help='{} help'.format(cmd))
+            for name, val in self.tx_commands[cmd]['option'].items():
+                _parser.add_argument("--{}".format(name), type=val["type"], required=val["required"],
+                                     help=val["detail"])
+            _parser.add_argument("--config", type=str, required=False,help="config.yml's path")
 
+        # parse: built in command
+        for cmd_name, cmd_val in self.built_in_commands.items():
+            _parser = _sub_parser.add_parser(cmd_name, help='{} help'.format(cmd_name))
+            for name, val in self.built_in_commands[cmd_name]['option'].items():
+                _parser.add_argument("--{}".format(name), type=val["type"], required=val["required"],help=val["detail"])
+            _parser.add_argument("--config", type=str, required=False,help="config.yml's path")
 
-    def exec_command(self, cmd, argv):
-        if cmd in self.commands:
-            if "-h" in argv or "--help" in argv:
-                print(self.commands[cmd]["detail"])
-                print("-----------")
-                print("Arguments")
-                for name, opt in self.commands[cmd]["option"].items():
-                    print("- {:10s}: {:6}".format(name, opt["detail"]))
-                return True
-            else:
-                import getopt
-                # I want to make it more simple....
-                expected = list(map(lambda x: x[0] + "=",
-                                list(filter(lambda o: o[1]['type'] != self.Type.NONE,self.commands[cmd]["option"].items()))
-                            ))
-                expected.extend(list(map(lambda x: x[0],
-                                list(filter(lambda o: o[1]['type'] == self.Type.NONE,self.commands[cmd]["option"].items()))
-                )))
-                try:
-                    optlist, _ = getopt.getopt(argv, '', expected)
-                except getopt.GetoptError as e:
-                    print("Maybe option is wrong, I required {}".format(expected))
-                    return False
-
-                new_argv = {}
-                for opt in optlist:
-                    for name in self.commands[cmd]["option"]:
-                        if name == opt[0].split('--')[-1]:
-                            new_argv[name] = opt[1]
-
-                try:
-                    if cmd == "config":
-                        if self.withoutConf:
-                            print("you can show config under loading config, but not loaded config.yml...".format(cmd))
-                            return False
-                        self.commands[cmd]["function"](
-                            {"name":self.name,
-                             "publicKey":self.key_pair["publicKey"],
-                             "privateKey":self.key_pair["privateKey"],
-                             "location":self.location
-                            }
-                        )
-                        return True
-
-                    command = self.commands[cmd]["function"](new_argv)
-                    if command:
-                        print("generated command: {}".format(command))
-                        if self.withoutConf:
-                            print("{} is successful, but not loaded config.yml...".format(cmd))
-                            return 0
-                        tx = generateTransaction(self.name, [command],self.key_pair)
-                        if not sendTx(self.location, tx):
-                            print(
-                                "Transaction is not arrived...\n"
-                                "Could you ckeck this => {}\n"
-                                    .format(self.location)
-                            )
-                            return False
-                except CliException as e:
-                    print(e.message)
-                    return False
-                return True
-
-        if cmd.lower() in ["quit", "bye", "finish", "exit", "end"]:
-            print("Thanks bye! (^o^) ")
-            sys.exit(0)
-        return "command not found: {}".format(cmd)
-
-    def run(self):
-        line = ''
-        while line != 'stop':
-            line = None
-            try:
-                line = input('{}@default [{}] >> '.format(self.name, BASE_NAME))
-            except EOFError:
-                print("\nThanks bye! (^o^) ")
-                sys.exit(0)
-            if line:
-                argv = line.split()[1:]
-                res = self.exec_command(line.split()[0], line.split()[1:])
-                if res:
-                    print(res)
-
-
-def handler(signal, frame):
-    print("\nThanks bye! (^o^) ")
-    sys.exit(0)
-
-
-def main():
-    printInfo = False
-    import signal
-    argv = sys.argv
-    cmdList = commands.CommandList()
-    c = ChiekuiCli(cmdList, printInfo)
-    if len(argv) == 2 and argv[-1] == "--interactive":
-        signal.signal(signal.SIGINT, handler)
-        c.run()
-    elif len(argv) >= 2 and argv[-1] != "--interactive":
-        if c.exec_command(argv[1], argv[2:]):
-            print("success full")
-            sys.exit(0)
-        else:
-            print("failed")
-            sys.exit(1)
-    else:
+    def print_introduction(self):
         print(
             "----------------\n"
             "Iroha-mizuki-cli\n"
             "----------------\n\n"
             "Current support commands"
         )
-        for cmd in cmdList.commands.keys():
+        for cmd in self.tx_commands.keys():
             print("  - {}".format(cmd))
-
         print(
             "\n"
             "Sample:\n\n"
-            "  > python ./cli.py CreateAsset --domain_id japan --precision 0 --asset_name yen"
+            "  > python ./cli.py CreateAsset --domain_id japan --precision 0 --asset_name yen\n"
         )
-        print("\n")
 
+    def exec_tx(self, cmd, argv):
+        file_io.load_config(argv.config)
+        command = self.tx_commands[cmd]["function"](vars(argv))
+        if command:
+            if not self.context.loaded:
+                print("Config data is not loaded! to send tx require config")
+                return False
+            tx = generateTransaction(self.context.name, [command], self.context.key_pair)
+            if not sendTx(self.context.location, tx):
+                print(
+                    "Transaction is not arrived...\n"
+                    "Could you ckeck this => {}\n".format(self.context.location)
+                )
+                return False
+        else:
+            print("Err")
+
+    def exec_query(self, cmd, argv):
+        pass
+
+    def exec(self, argv):
+        parsed_argv = self.parser.parse_args(argv[1:])
+        if len(argv) < 2:
+            self.print_introduction()
+            return
+        self.context = Context(vars(parsed_argv).get('config'))
+        if argv[1] == 'tx':
+            self.exec_tx(argv[2], parsed_argv)
+        elif argv[1] == 'query':
+            self.exec_query(argv[2], parsed_argv)
+
+        if argv[1] in self.built_in_commands:
+            self.built_in_commands[argv[1]]["function"]( vars(parsed_argv), self.context)
+
+
+def main(argv=sys.argv):
+    cli = ChiekuiCli()
+    cli.exec(argv)
+    return
 
 if __name__ == "__main__":
-    import logging
-
-    LOG_FILENAME = '/tmp/{}_cli.log'.format(BASE_NAME)
-    logging.basicConfig(
-        filename=LOG_FILENAME,
-        level=logging.DEBUG,
-    )
     main()

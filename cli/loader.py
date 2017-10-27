@@ -3,10 +3,10 @@ from cli.exception import CliException
 
 BASE_NAME = "iroha-mizuki-cli"
 
-def load(printInfo = False):
+def load( file_path, printInfo = False):
     import yaml
     try:
-        data = yaml.load(open("config.yml", "r"), yaml.SafeLoader)
+        data = yaml.load(open(file_path, "r"), yaml.SafeLoader)
         if not "account" in data:
             raise CliException("Require account dict in confid.yml")
 
@@ -74,7 +74,7 @@ def load(printInfo = False):
             print("[{}] Something went wrong while parsing yaml file".format(BASE_NAME))
             sys.exit(1)
     except FileNotFoundError as e:
-        print("[{}] Could you make config.yml in current directory".format(BASE_NAME))
+        print("[{}] Sorry, cannot find file '{}' ...".format(BASE_NAME, file_path))
         sys.exit(1)
     else:
         return {
