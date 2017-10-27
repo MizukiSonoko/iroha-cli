@@ -19,7 +19,6 @@ def exec_generate_proto(source):
         sys.exit(-1)
     sys.stdout.write("Generate {}_grcp_pb2.py ==> successfull\n".format(source.split('.')[0]))
 
-
 ed25519_sha3_path = "cli/cli_ed25519"
 sources = [ed25519_sha3_path+"/cli_ed25519module.c"]
 sources.extend([ed25519_sha3_path+"/lib/" + s for s in os.listdir(ed25519_sha3_path+"/lib/") if s.endswith(".c")])
@@ -41,7 +40,7 @@ class GeneratePb(_build_py):
 if __name__ == '__main__':
     setup(
           name='iroha-ya-cli',
-          version='1.1.1',
+          version='1.1.2',
           description='Cli for hyperledger/iroha',
           author='Sonoko Mizuki',
           license='Apache',
