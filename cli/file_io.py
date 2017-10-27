@@ -1,3 +1,4 @@
+import os
 import sys
 from cli.exception import CliException
 
@@ -9,13 +10,17 @@ def load_config(file_path):
 
     import yaml
     try:
-        data = yaml.load(open(file_path, "r"), yaml.SafeLoader)
+        with open(file_path, "r") as conf_file:
+            data = yaml.load(conf_file, yaml.SafeLoader)
+
         account = data["account"]
         peer = data["peer"]
 
         try:
-            publicKey = open(data["account"].get("publicKeyPath"), "r").read()
-            privateKey = open(data["account"].get("privateKeyPath"), "r").read()
+            with open(data["account"].get("publicKeyPath"), "r") as pubKeyFile:
+                publicKey = pubKeyFile.read()
+            with open(data["account"].get("privateKeyPath"), "r") as priKeyFile:
+                privateKey = priKeyFile.read()
         except FileNotFoundError:
             raise CliException("File not found : {} or {} ".format(
                 data["account"].get("publicKeyPath"), data["account"].get("privateKeyPath")))
@@ -68,7 +73,7 @@ def load_config(file_path):
 
 def save_config(filename_base, data):
     import yaml
-    conf_path = "config.yaml"
+    conf_path = "config.yml"
     dumped_conf = yaml.dump(data, default_flow_style=False)
 
     try:
@@ -81,6 +86,8 @@ def save_config(filename_base, data):
 
 def save_keypair(filename_base, key_pair):
     try:
+        if os.path.exists(filename_base + ".pub") or os.path.exists(filename_base + ".pri") :
+            raise CliException("Aleady key pair '{name}' exists!! ".format(name=filename_base))
         with open(filename_base + ".pub", "w") as pub:
             pub.write(key_pair.public_key.decode())
     except (OSError, IOError) as e:
@@ -89,7 +96,7 @@ def save_keypair(filename_base, key_pair):
 
     try:
         with open(filename_base + ".pri", "w") as pub:
-            pub.write(key_pair.public_key.decode())
+            pub.write(key_pair.private_key.decode())
     except (OSError, IOError) as e:
         print(e)
         raise CliException("Cannot open : {name}".format(name=filename_base + ".pri"))
