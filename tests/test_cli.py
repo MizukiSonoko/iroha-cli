@@ -61,7 +61,9 @@ class TestBuildInCommands(unittest.TestCase):
         sys.stdout = sys.__stdout__
         self.assertTrue('{}-mizuki-cli'.format(TARGET) in io.getvalue())
         self.assertTrue('Current support commands' in io.getvalue())
-        self.assertTrue('Sample:' in io.getvalue())
+        self.assertTrue('Sample keygen:' in io.getvalue())
+        self.assertTrue('Sample Tx:' in io.getvalue())
+        self.assertTrue('Sample Query:' in io.getvalue())
 
     def test_config_without_config_data(self):
         sys.stdout = io
