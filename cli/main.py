@@ -6,8 +6,9 @@ import argparse
 from cli.built_in_commands import BuildInCommand
 from cli.commands import CommandList
 from cli.crypto import KeyPair
-from cli.network import generateTransaction, sendTx
+from cli.network import generateTransaction, sendTx, generateQuery, sendQuery
 import cli.file_io as file_io
+from cli.query import QueryList
 
 BASE_NAME = "iroha-cli"
 TARGET = "iroha"
@@ -39,11 +40,11 @@ class Context:
 
 
 class ChiekuiCli:
-
     def __init__(self):
         self.tx_commands = CommandList().commands
+        self.queries = QueryList().queries
         self.built_in_commands = BuildInCommand().commands
-        self.context =None
+        self.context = None
 
         # ================================
         #              Parser
@@ -59,7 +60,17 @@ class ChiekuiCli:
             for name, val in self.tx_commands[cmd]['option'].items():
                 _parser.add_argument("--{}".format(name), type=val["type"], required=val["required"],
                                      help=val["detail"])
-            _parser.add_argument("--config", type=str, required=False,help="config.yml's path")
+            _parser.add_argument("--config", type=str, required=False, help="config.yml's path")
+
+        # parse: query
+        parse_query = _sub_parser.add_parser("query")
+        sup_parser_query = parse_query.add_subparsers()
+        for qry in self.queries:
+            _parser = sup_parser_query.add_parser(qry, help='{} help'.format(qry))
+            for name, val in self.queries[qry]['option'].items():
+                _parser.add_argument("--{}".format(name), type=val["type"], required=val["required"],
+                                     help=val["detail"])
+            _parser.add_argument("--config", type=str, required=False, help="config.yml's path")
 
         # parse: built in command
         for cmd_name, cmd_val in self.built_in_commands.items():
@@ -100,8 +111,19 @@ class ChiekuiCli:
         else:
             print("Err")
 
-    def exec_query(self, cmd, argv):
-        pass
+    def exec_query(self, qry, argv):
+        file_io.load_config(argv.config)
+        qry = self.queries[qry]["function"](vars(argv))
+        if qry:
+            query = generateQuery(self.context.name, qry, self.context.key_pair)
+            if not sendQuery(self.context.location, query):
+                print(
+                    "Transaction is not arrived...\n"
+                    "Could you ckeck this => {}\n".format(self.context.location)
+                )
+                return False
+        else:
+            print("Err")
 
     def exec(self, argv):
         parsed_argv = self.parser.parse_args(argv[1:])
@@ -116,7 +138,7 @@ class ChiekuiCli:
 
         if argv[1] in self.built_in_commands:
             self.built_in_commands[argv[1]]["function"]( vars(parsed_argv), self.context)
-
+        
 
 def main(argv=sys.argv):
     cli = ChiekuiCli()
