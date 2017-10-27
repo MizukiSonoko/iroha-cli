@@ -29,7 +29,6 @@ class CommandList:
             ExternalGuardian external_guardian = 15;
     """
 
-
     def __init__(self, printInfo=False):
         self.printInfo = printInfo
         self.commands = {
@@ -146,15 +145,17 @@ class CommandList:
             if item[1]["required"] and not item[0] in argv:
                 raise CliException("{} is required".format(item[0]))
             if item[0] in argv:
-                if type(argv[item[0]]) != item[1]["type"]:
-                    raise CliException("{} is {}".format(item[0],str(item[1]["type"])))
+                if argv[item[0]] and type(argv[item[0]]) != item[1]["type"]:
+                    raise CliException("{} is {}".format(
+                        item[0],
+                        str(item[1]["type"])
+                    ))
 
     def printTransaction(self, name, expected, argv):
         if self.printInfo:
             print("[{}] run {} ".format(BASE_NAME, name))
             for n in expected.keys():
                 print("- {}: {}".format(n, argv[n]))
-
 
     def config(self, argv):
         print(
@@ -198,8 +199,8 @@ class CommandList:
                 print(e)
                 raise CliException("Cannot open : {name}".format(name=filename_base + ".pri"))
 
-            os.chmod(filename_base + ".pub", 0o400)
-            os.chmod(filename_base + ".pri", 0o400)
+            # os.chmod(filename_base + ".pub", 0o400)
+            # os.chmod(filename_base + ".pri", 0o400)
 
             if "make_conf" in argv:
                 import yaml
@@ -285,10 +286,11 @@ class CommandList:
         argv_info = self.commands[name]["option"]
         self.validate(argv_info, argv)
         self.printTransaction(name, argv_info, argv)
+        precision = argv.get("precision") if argv.get("precision") else 0
         return Command(create_asset=CreateAsset(
             asset_name=argv["asset_name"],
             domain_id=argv["domain_id"],
-            precision=int(argv.get("precision", 0))
+            precision= precision
         ))
 
     def CreateDomain(self, argv):

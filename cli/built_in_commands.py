@@ -30,7 +30,7 @@ class BuildInCommand:
                         "required": True
                     },
                     "make_conf": {
-                        "type": None,
+                        "type": str,
                         "detail": "generate conf.yml",
                         "required": False
                     }
@@ -48,33 +48,32 @@ class BuildInCommand:
             if item[1]["required"] and not item[0] in argv:
                 raise CliException("{} is required".format(item[0]))
             if item[0] in argv:
-                if item[1]["type"] == int and not argv[item[0]].replace("-", "").isdigit():
-                    raise CliException("{} is integer".format(item[0]))
-                if item[1]["type"] == float and not argv[item[0]].isdigit():
-                    raise CliException("{} is unsigned integer".format(item[0]))
-                if item[1]["type"] == float and not argv[item[0]].replace("-", "").replace(".",                                                                                                         "").isdigit():
-                    raise CliException("{} is float".format(item[0]))
+                if argv[item[0]] and type(argv[item[0]]) != item[1]["type"]:
+                    raise CliException("{} is {}".format(
+                        item[0],
+                        str(item[1]["type"])
+                    ))
 
-    def config(self, context, argv):
+    def config(self, argv, context):
+        if not context.loaded:
+            print("Config data is not loaded!")
+            return
         print(
             "\n"
             "  Config  \n"
             " =========\n"
         )
-        print(" name      : {}".format(argv["name"]))
-        print(" publicKey : {}".format(argv["publicKey"]))
+        print(" name      : {}".format(context.name))
+        print(" publicKey : {}".format(context.public_key))
         print(" privateKey: {}".format(
-            argv["privateKey"][:5] + "**...**" + argv["privateKey"][-5:])
+            context.private_key[:5] + "**...**" + context.private_key[-5:])
         )
-        print(" targetPeer: {}".format(argv["location"]))
-        print("")
-        return None
+        print(" targetPeer: {}\n".format(context.location))
 
-    def keygen(self, context, argv):
+    def keygen(self, argv,context = None):
         name = "keygen"
         argv_info = self.commands[name]["option"]
         self.validate(argv_info, argv)
-        self.printTransaction(name, argv_info, argv)
 
         key_pair = crypto.generate_keypair()
         if "keypair_name" in argv:
