@@ -91,8 +91,12 @@ class ChiekuiCli:
             print("  - {}".format(cmd))
         print(
             "\n"
-            "Sample:\n\n"
-            "  > python ./cli.py CreateAsset --domain_id japan --precision 0 --asset_name yen\n"
+            "Sample keygen:\n\n"
+            "  > iroha-ya-cli keygen  --account_name mizuki --make_conf yes\n\n"
+            "Sample Tx:\n\n"
+            "  > iroha-ya-cli tx CreateAccount --account_name mizuki --domain_id japan --config config.yml\n"
+            "Sample Query:\n\n"
+            "  > iroha-ya-cli query GetAccount --account_id mizuki@japan --config my_config.yml\n"
         )
 
     def exec_tx(self, cmd, argv):
