@@ -15,11 +15,7 @@
 ## Simple install
 
 ```
-$ git clone https://github.com/MizukiSonoko/iroha-cli.git
-$ cd iroha-cli
-$ pip install -r requirements.txt # Required compiling proto file
-$ python setup.py build
-$ python setup.py develop # I want to `python setup.py install`...
+$ pip install iroha-ya-cli
 ```
 
 ## How to use
