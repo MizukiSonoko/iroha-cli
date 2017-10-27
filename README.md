@@ -26,22 +26,18 @@ $ python setup.py develop # I want to `python setup.py install`...
 
 #### 0) Make `keypair` and `config.yml` in this.
 ```
-$ iroha-ya-cli keygen --account_name mizuki --make_conf
-File not found : mizuki.pub or mizuki.pri 
-Without config mode
-Generate conf.yml!
-success full
+$ iroha-ya-cli keygen  --account_name mizuki --make_conf yes
 ```
 
 Result
 ```
 $ ls -lth | head  -n 4
-total 424
--rw-r--r--   1 mizuki  staff   122B Oct 19 13:45 config.yml
--r--------   1 mizuki  staff    64B Oct 19 13:45 mizuki.pri
--r--------   1 mizuki  staff    64B Oct 19 13:45 mizuki.pub
+total 76K
+-rw-r--r--   1 mizuki staff  122 Oct 27 07:38 config.yml
+-rw-r--r--   1 mizuki staff   88 Oct 27 07:38 mizuki.pri
+-rw-r--r--   1 mizuki staff   44 Oct 27 07:38 mizuki.pub
 ```
-
+**Please change permission for protect key!!**
 
 #### 1) Change information in generated `config.yml` 
 This file contains target peer information and my account info.
@@ -59,37 +55,29 @@ Peer is target where cli send tx to. I guess Iroha uses grpc, so port is 50051.
 ####  2) Check config is whether correct or not using `config` command. 
 
 ```
-$ iroha-ya-cli config
+$ iroha-ya-cli config --config config.yml
 
-  Config  
+  Config
  =========
 
  name      : mizuki
- publicKey : be98f280f22572686cbac3977f85be12176d72d45067ade75d81f6b5b626c138
- privateKey: 908ab**...**cfcff
- load from : config.yml
+ publicKey : d5MxIVcHE2eq883JFYxkQVKZV794hWqR2VnXj/iSU1A=
+ privateKey: GOcAK**...**Gvg==
  targetPeer: localhost:50051
 
-success full
 ```
 
 #### 3) Send tx like this
 
 ```
-$ iroha-ya-cli CreateAsset --domain_id japan --precision 0 --asset_name yen
-generated command: create_asset {
-  asset_name: "yen"
-  domain_id: "japan"
-}
-
+$ iroha-ya-cli tx  CreateAsset --domain_id japan --precision 0 --asset_name yen --config config.yml
 == Grpc happens error ==
-- Server is active?: False 
-- What's happen?   : Connect Failed 
+- Server is active?: False
+- What's happen?   : Connect Failed
 
 Transaction is not arrived...
 Could you ckeck this => localhost:50051
 
-failed
 ```
 I sent. (This error is expected, no problem 😅 😅 )
 
@@ -102,32 +90,40 @@ iroha-ya-cli
 
 In second, you can see detail of each command.
 ```
-$ iroha-ya-cli CreateAsset -h
-Create new asset in domain
------------
-Arguments
-- precision : how much support .000, default 0
-- domain_id : new account will be in this domain like japan
-- asset_name: asset name like mizuki
+$ iroha-ya-cli tx CreateAsset -h
+usage: iroha-ya-cli tx CreateAsset [-h] --asset_name ASSET_NAME --domain_id
+                                   DOMAIN_ID [--precision PRECISION]
+                                   [--config CONFIG]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --asset_name ASSET_NAME
+                        asset name like mizuki
+  --domain_id DOMAIN_ID
+                        new account will be in this domain like japan
+  --precision PRECISION
+                        how much support .000, default 0
+  --config CONFIG       config.yml's path
+  
 ```
  
 ## Sample
 
 - CreateAsset 
 ```
-iroha-ya-cli CreateAsset --domain_id japan --precision 0 --asset_name yen
+iroha-ya-cli tx CreateAsset --domain_id japan --precision 0 --asset_name yen --config config.yml
 ```
 
 - CreateAccount
 
 ```
-iroha-ya-cli CreateAccount --account_name mizuki --domain_id japan
+iroha-ya-cli tx CreateAccount --account_name mizuki --domain_id japan --config config.yml
 ```
 
 - CreateDomain
 
 ```
-iroha-ya-cli CreateDomain --domain_name aizu
+iroha-ya-cli tx CreateDomain --domain_name aizu --config config.yml
 ```
 
 ....
