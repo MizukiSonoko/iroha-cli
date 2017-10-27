@@ -40,9 +40,7 @@ def generateQuery(account_id, qry, key_pair):
     sign = crypto.sign(key_pair, payload_hash)
     query = Query(
         payload=payload,
-        signature=[
-            Signature(pubkey=key_pair.raw_public_key, signature=sign)
-        ]
+        signature=Signature(pubkey=key_pair.raw_public_key, signature=sign)
     )
     return query
 
@@ -58,7 +56,7 @@ def sendTx(location, tx):
               "- Server is active?: {} \n"
               "- What's happen?   : {} \n"
               .format(e.is_active(), e.details())
-              )
+        )
         return False
 
 
