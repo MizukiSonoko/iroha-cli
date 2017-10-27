@@ -197,6 +197,19 @@ pip install -r requirements.txt
 
 ## Tips
 
+How to conver hyperledger/iroha-cli's key and cli's key? 
+You can use `ase64.b64encode(bytearray.fromhex())` and `binascii.hexlify(base64.b64decode())`
+```
+pubkey_in_iroha = 'c2b800f08c0b45ac9935f03471a04aa1414a974a9f03300503529f578e2031de'
+pubkey_in_cli   = 'wrgA8IwLRayZNfA0caBKoUFKl0qfAzAFA1KfV44gMd4='
+converted_pubkey_iroha = base64.b64encode(bytearray.fromhex(pubkey_in_iroha)).decode()
+converted_pubkey_cli = binascii.hexlify(base64.b64decode(pubkey_in_cli)).decode()
+
+print(converted_pubkey_iroha == pubkey_in_cli)
+print(converted_pubkey_cli == pubkey_in_iroha)
+```
+**Be careful decode()/encode(), byte,str**
+
 It happens this
 ```
 Running PyYAML-3.12/setup.py -q bdist_egg --dist-dir /tmp/easy_install-wwituzoz/PyYAML-3.12/egg-dist-tmp-kgc91i9t
