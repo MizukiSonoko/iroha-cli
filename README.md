@@ -105,7 +105,39 @@ optional arguments:
   
 ```
  
+#### 5) You can know data in Iroha using `query`.
+
+```
+iroha-ya-cli query GetAccount --account_id admin@test --config my_config.yml
+```
+
+Response is json. so you can use command like `jq`
+```
+{
+  "account": {
+    "permissions": {
+      "canTransfer": true,
+      "readAllAccounts": true,
+      "createDomains": true,
+      "removeSignatory": true,
+      "setQuorum": true,
+      "createAccounts": true,
+      "createAssets": true,
+      "addSignatory": true,
+      "issueAssets": true,
+      "setPermissions": true
+    },
+    "accountId": "admin@test",
+    "quorum": 1,
+    "domainName": "test"
+  }
+}
+```
+
+
 ## Sample
+
+### Tx
 
 - CreateAsset 
 ```
@@ -126,6 +158,20 @@ iroha-ya-cli tx CreateDomain --domain_name aizu --config config.yml
 
 ....
 
+### Query
+
+- GetAccount 
+```
+iroha-ya-cli query GetAccount --account_id admin@test --config my_config.yml 
+```
+
+- GetAccountTransactions
+
+```
+iroha-ya-cli query GetAccountTransactions --account_id admin@test --config my_config.yml
+```
+
+....
 
 ## Test
 ```
