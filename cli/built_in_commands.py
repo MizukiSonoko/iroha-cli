@@ -69,6 +69,7 @@ class BuildInCommand:
             context.private_key[:5] + "**...**" + context.private_key[-5:])
         )
         print(" targetPeer: {}\n".format(context.location))
+        return True
 
     def keygen(self, argv,context = None):
         name = "keygen"

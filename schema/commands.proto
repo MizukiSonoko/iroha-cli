@@ -67,22 +67,6 @@ message CreateRole {
     repeated string permissions = 2;
 }
 
-message GrantPermission {
-    string account_id = 1;
-    string permission_name = 2;
-}
-
-message RevokePermission {
-    string account_id = 1;
-    string permission_name = 2;
-}
-
-message ExternalGuardian{
-    string account_id = 1;
-    string locked_asset_id = 2;
-    string unlocked_asset_id = 3;
-    Amount unit_amount = 4;
-}
 
 message Command {
     oneof command {
@@ -98,8 +82,5 @@ message Command {
         TransferAsset transfer_asset = 10;
         AppendRole append_role = 11;
         CreateRole create_role = 12;
-        GrantPermission grant_permission = 13;
-        RevokePermission revoke_permission = 14;
-        ExternalGuardian external_guardian = 15;
     }
 }
