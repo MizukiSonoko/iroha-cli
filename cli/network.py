@@ -29,8 +29,8 @@ def generateTransaction(account_id, commands, key_pair):
             Signature(pubkey=key_pair.raw_public_key, signature=sign)
         ]
     )
+    #print(tx)
     return tx
-
 
 
 def generateQuery(account_id, qry, key_pair):
