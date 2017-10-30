@@ -153,4 +153,5 @@ def main(argv=sys.argv):
     return cli.exec(argv)
 
 if __name__ == "__main__":
-    sys.exit(main())
+    exit_code = main()
+    sys.exit(exit_code if not exit_code is None else 0)
