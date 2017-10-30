@@ -7,6 +7,7 @@ import grpc
 from cli import crypto
 from cli.exception import CliException
 from endpoint_pb2_grpc import CommandServiceStub, QueryServiceStub
+from endpoint_pb2 import TxStatusRequest, TxStatus
 from primitive_pb2 import Signature
 from block_pb2 import Transaction
 from queries_pb2 import Query
@@ -30,7 +31,28 @@ def generateTransaction(account_id, commands, key_pair):
         ]
     )
     #print(tx)
-    return tx
+    return tx, payload_hash
+
+def waitTransaciton(location, tx_hash):
+    payload = TxStatusRequest(tx_hash=tx_hash)
+    not_received_cnt = 0
+    while True:
+        result = sendTxStatus(location, payload)
+
+        if result.tx_status == TxStatus.Value('STATELESS_VALIDATION_FAILED'):
+            raise Exception('stateless validation failed')
+
+        elif result.tx_status == TxStatus.Value('STATEFUL_VALIDATION_FAILED'):
+            raise Exception('stateful validation failed')
+
+        elif result.tx_status == TxStatus.Value('NOT_RECEIVED'):
+            if not_received_cnt > MAX_POLLING_TIME:
+                raise TimeoutError
+            else:
+                not_received_cnt += 1
+
+        elif result.tx_status == TxStatus.Value('COMMITTED'):
+            return True
 
 
 def generateQuery(account_id, qry, key_pair):
@@ -50,6 +72,19 @@ def generateQuery(account_id, qry, key_pair):
         signature=Signature(pubkey=key_pair.raw_public_key, signature=sign)
     )
     return query
+
+def sendTxStatus(location, tx_status):
+    try:
+        channel = grpc.insecure_channel(location)
+        stub = CommandServiceStub(channel)
+        return stub.Status(tx_status, timeout=1)  # wait 1s
+    except grpc.RpcError as e:
+        print("== Grpc happens error ==\n"
+              "- Server is active?: {} \n"
+              "- What's happen?   : {} \n"
+              .format(e.is_active(), e.details())
+        )
+        return False
 
 
 def sendTx(location, tx):
