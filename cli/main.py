@@ -137,10 +137,7 @@ class ChiekuiCli:
                 print(res)
             except CliException as e:
                 print(e)
-<<<<<<< HEAD
-=======
                 return -1
->>>>>>> origin/master
         else:
             print("Err")
             return -1
