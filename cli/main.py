@@ -7,7 +7,7 @@ from cli.built_in_commands import BuildInCommand
 from cli.commands import CommandList
 from cli.crypto import KeyPair
 from cli.exception import CliException
-from cli.network import generateTransaction, sendTx, generateQuery, sendQuery
+from cli.network import generateTransaction, sendTx, generateQuery, sendQuery, waitTransaciton
 import cli.file_io as file_io
 from cli.query import QueryList
 
@@ -106,13 +106,23 @@ class ChiekuiCli:
             if not self.context.loaded:
                 print("Config data is not loaded! to send tx require config")
                 return -1
-            tx = generateTransaction(self.context.name, [command], self.context.key_pair)
+
+            tx, tx_hash = generateTransaction(self.context.name, [command], self.context.key_pair)
             if not sendTx(self.context.location, tx):
                 print(
                     "Transaction is not arrived...\n"
                     "Could you ckeck this => {}\n".format(self.context.location)
                 )
                 return -1
+            try:
+                waitTransaciton(self.context.location, tx_hash)
+            except Exception as e:
+                print(
+                        "failed to executed the transaction \n"
+                        "error => {}\n".format(e)
+                        )
+                return -1
+
         else:
             print("Err")
             return -1
