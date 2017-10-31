@@ -10,17 +10,13 @@ def amount_to_int(amount):
     Returns:
         int: int value equal to arg amount.
     """
-    logger.debug("amount2int")
     res = int(0)
     res += int(amount.value.first)
     res *= UINT64_NUMBER
-    logger.debug(res)
     res += int(amount.value.second)
     res *= UINT64_NUMBER
-    logger.debug(res)
     res += int(amount.value.third)
     res *= UINT64_NUMBER
-    logger.debug(res)
     res += int(amount.value.fourth)
     return res
 
@@ -34,7 +30,6 @@ def int_to_amount(int_num,precision=0):
     Returns:
         `Amount`: protobuf Amount structure equal to int_num
     """
-    logger.debug("int2amount")
     value = uint256()
     value.fourth = int(int_num % UINT64_NUMBER)
     int_num //= UINT64_NUMBER
