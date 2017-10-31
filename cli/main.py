@@ -105,14 +105,15 @@ class ChiekuiCli:
         if command:
             if not self.context.loaded:
                 print("Config data is not loaded! to send tx require config")
-                return False
+                return -1
+
             tx, tx_hash = generateTransaction(self.context.name, [command], self.context.key_pair)
             if not sendTx(self.context.location, tx):
                 print(
                     "Transaction is not arrived...\n"
                     "Could you ckeck this => {}\n".format(self.context.location)
                 )
-                return False
+                return -1
             try:
                 waitTransaciton(self.context.location, tx_hash)
             except Exception as e:
@@ -120,10 +121,11 @@ class ChiekuiCli:
                         "failed to executed the transaction \n"
                         "error => {}\n".format(e)
                         )
-                return False
+                return -1
 
         else:
             print("Err")
+            return -1
 
     def exec_query(self, qry, argv):
         file_io.load_config(argv.config)
@@ -135,28 +137,34 @@ class ChiekuiCli:
                 print(res)
             except CliException as e:
                 print(e)
+<<<<<<< HEAD
+=======
+                return -1
+>>>>>>> origin/master
         else:
             print("Err")
+            return -1
 
     def exec(self, argv):
         parsed_argv = self.parser.parse_args(argv[1:])
         if len(argv) < 2:
-            self.print_introduction()
-            return
+            return self.print_introduction()
+
         self.context = Context(vars(parsed_argv).get('config'))
         if argv[1] == 'tx':
-            self.exec_tx(argv[2], parsed_argv)
+            return self.exec_tx(argv[2], parsed_argv)
+
         elif argv[1] == 'query':
-            self.exec_query(argv[2], parsed_argv)
+            return self.exec_query(argv[2], parsed_argv)
 
         if argv[1] in self.built_in_commands:
-            self.built_in_commands[argv[1]]["function"]( vars(parsed_argv), self.context)
+            return self.built_in_commands[argv[1]]["function"]( vars(parsed_argv), self.context)
         
 
 def main(argv=sys.argv):
     cli = ChiekuiCli()
-    cli.exec(argv)
-    return
+    return cli.exec(argv)
 
 if __name__ == "__main__":
-    main()
+    exit_code = main()
+    sys.exit(exit_code if not exit_code is None else 0)
