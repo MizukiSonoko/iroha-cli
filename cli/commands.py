@@ -42,7 +42,7 @@ class CommandList:
                         "required": True
                     },
                     "amount": {
-                        "type": float,
+                        "type": int,
                         "detail": "target's asset id like japan/yen",
                         "required": True
                     },
@@ -127,7 +127,7 @@ class CommandList:
                         "required": False
                     },
                     "amount": {
-                        "type": str,
+                        "type": int,
                         "detail": "how much transfer",
                         "required": True
                     }
@@ -165,12 +165,7 @@ class CommandList:
         return Command(add_asset_quantity=AddAssetQuantity(
             account_id=argv["account_id"],
             asset_id=argv["asset_id"],
-            amount=Amount(value=uint256(
-                first=int(float(argv["amount"])),
-                second=0,
-                third=0,
-                fourth=0,
-            ), precision=0)
+            amount=int_to_amount(argv["amount"], precision=0)
         ))
 
     def CreateAccount(self, argv):
@@ -227,10 +222,5 @@ class CommandList:
             dest_account_id=argv["dest_account_id"],
             asset_id=argv["asset_id"],
             description=argv.get("description", ""),
-            amount=Amount(value=uint256(
-                first=int(float(argv["amount"])),
-                second=0,
-                third=0,
-                fourth=0,
-            ), precision=0)
+            amount=int_to_amount(argv["amount"], precision=0)
         ))
