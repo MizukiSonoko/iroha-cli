@@ -39,7 +39,7 @@ class TestAddAssetQuantity(unittest.TestCase):
         self.assertTrue(command.add_asset_quantity)
         self.assertTrue(command.add_asset_quantity.account_id == self.sample.sample_account_id_1)
         self.assertTrue(command.add_asset_quantity.asset_id == self.sample.sample_asset_id_1)
-        self.assertTrue(command.add_asset_quantity.amount.value.first == 10)
+        self.assertTrue(command.add_asset_quantity.amount.value.fourth == 10)
 
     def test_no_account_id_command_generate(self):
         try:
