@@ -33,7 +33,7 @@ class TestAddAssetQuantity(unittest.TestCase):
         command = self.commands["AddAssetQuantity"]["function"](
             {"account_id": self.sample.sample_account_id_1,
              "asset_id": self.sample.sample_asset_id_1,
-             "amount": 10.0
+             "amount": 10
              }
         )
         self.assertTrue(command.add_asset_quantity)
@@ -46,7 +46,7 @@ class TestAddAssetQuantity(unittest.TestCase):
             self.commands["AddAssetQuantity"]["function"](
                 {
                     "asset_id": self.sample.sample_asset_id_1,
-                    "amount": 10.0
+                    "amount": 10
                 }
             )
         except CliException as e:
@@ -59,7 +59,7 @@ class TestAddAssetQuantity(unittest.TestCase):
             self.commands["AddAssetQuantity"]["function"](
                 {
                     "account_id": self.sample.sample_account_id_1,
-                    "amount": 10.0
+                    "amount": 10
                 }
             )
         except CliException as e:
@@ -86,7 +86,7 @@ class TestAddAssetQuantity(unittest.TestCase):
                 {
                     "account_id": 123,
                     "asset_id": self.sample.sample_asset_id_1,
-                    "amount": 10.0
+                    "amount": 10
                 }
             )
         except CliException as e:

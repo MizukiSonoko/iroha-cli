@@ -43,7 +43,7 @@ class CommandList:
                         "required": True
                     },
                     "amount": {
-                        "type": float,
+                        "type": int,
                         "detail": "target's asset id like japan/yen",
                         "required": True
                     },
@@ -128,7 +128,7 @@ class CommandList:
                         "required": False
                     },
                     "amount": {
-                        "type": float,
+                        "type": int,
                         "detail": "how much transfer",
                         "required": True
                     }
