@@ -100,11 +100,11 @@ class TestAddAssetQuantity(unittest.TestCase):
                 {
                     "account_id": self.sample.sample_account_id_1,
                     "asset_id": self.sample.sample_asset_id_1,
-                    "amount": 100
+                    "amount": 100.5
                 }
             )
         except CliException as e:
-            self.assertTrue(e.args[0] == "amount is <class 'float'>")
+            self.assertTrue(e.args[0] == "amount is <class 'int'>")
         else:
             self.fail("I want to exception")
 
