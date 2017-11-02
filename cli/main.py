@@ -135,6 +135,13 @@ class ChiekuiCli:
             self.print_introduction()
             return
         self.context = Context(vars(parsed_argv).get('config'))
+
+        #
+        # if not set --config. load current directory's config.yml
+        #
+        if not self.context.loaded:
+            self.context = Context('config.yml')
+
         if argv[1] == 'tx':
             self.exec_tx(argv[2], parsed_argv)
         elif argv[1] == 'query':
