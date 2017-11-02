@@ -6,7 +6,7 @@ BASE_NAME = "iroha-mizuki-cli"
 
 def load_config(file_path):
     if not file_path:
-        return None
+        raise CliException("File path is not setted")
 
     import yaml
     try:
@@ -67,8 +67,7 @@ def load_config(file_path):
             print("[{}] Something went wrong while parsing yaml file".format(BASE_NAME))
             sys.exit(1)
     except FileNotFoundError as e:
-        print("[{}] Not found config.yml in {}".format(BASE_NAME, file_path))
-        sys.exit(1)
+        raise CliException("Not found config.yml {}".format(BASE_NAME, file_path))
 
 
 def save_config(filename_base, data):
