@@ -23,8 +23,9 @@ class Context:
     key_pair = None
 
     def __init__(self, filepath):
-        conf = file_io.load_config(filepath)
-        if not conf:
+        try:
+            conf = file_io.load_config(filepath)
+        except:
             self.loaded = False
             return
         self.loaded = True
@@ -100,7 +101,6 @@ class ChiekuiCli:
         )
 
     def exec_tx(self, cmd, argv):
-        file_io.load_config(argv.config)
         command = self.tx_commands[cmd]["function"](vars(argv))
         if command:
             if not self.context.loaded:
@@ -117,10 +117,13 @@ class ChiekuiCli:
             print("Err")
 
     def exec_query(self, qry, argv):
-        file_io.load_config(argv.config)
         qry = self.queries[qry]["function"](vars(argv))
         if qry:
+            if not self.context.loaded:
+                print("Config data is not loaded! to send tx require config")
+                return False
             query = generateQuery(self.context.name, qry, self.context.key_pair)
+
             try:
                 res = sendQuery(self.context.location, query)
                 print(res)
@@ -134,8 +137,8 @@ class ChiekuiCli:
         if len(argv) < 2:
             self.print_introduction()
             return
-        self.context = Context(vars(parsed_argv).get('config'))
 
+        self.context = Context(vars(parsed_argv).get('config'))
         #
         # if not set --config. load current directory's config.yml
         #

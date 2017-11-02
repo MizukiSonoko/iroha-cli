@@ -69,7 +69,7 @@ class TestBuildInCommands(unittest.TestCase):
         sys.stdout = io
         cli.main.main(['iroha-ya-cli', 'config'])
         sys.stdout = sys.__stdout__
-        self.assertTrue('Config data is not loaded!' in io.getvalue())
+        self.assertTrue('skeleton' in io.getvalue())
 
     def test_config(self):
         sys.stdout = io
