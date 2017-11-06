@@ -10,9 +10,9 @@ from setuptools.command.build_py import build_py as _build_py
 from setuptools import setup, find_packages
 
 def exec_generate_proto(source):
-    python = shutil.which("python")
+    python = shutil.which("python3")
     if not python:
-        python = shutil.which("python3")
+        python = shutil.which("python")
 
     protoc_command = [ python, "-m", "grpc_tools.protoc", "-I.", "--python_out=.", source]
     if subprocess.call(protoc_command) != 0:
