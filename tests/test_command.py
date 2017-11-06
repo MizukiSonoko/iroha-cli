@@ -33,20 +33,20 @@ class TestAddAssetQuantity(unittest.TestCase):
         command = self.commands["AddAssetQuantity"]["function"](
             {"account_id": self.sample.sample_account_id_1,
              "asset_id": self.sample.sample_asset_id_1,
-             "amount": 10.0
+             "amount": 10
              }
         )
         self.assertTrue(command.add_asset_quantity)
         self.assertTrue(command.add_asset_quantity.account_id == self.sample.sample_account_id_1)
         self.assertTrue(command.add_asset_quantity.asset_id == self.sample.sample_asset_id_1)
-        self.assertTrue(command.add_asset_quantity.amount.value.first == 10)
+        self.assertTrue(command.add_asset_quantity.amount.value.fourth == 10)
 
     def test_no_account_id_command_generate(self):
         try:
             self.commands["AddAssetQuantity"]["function"](
                 {
                     "asset_id": self.sample.sample_asset_id_1,
-                    "amount": 10.0
+                    "amount": 10
                 }
             )
         except CliException as e:
@@ -59,7 +59,7 @@ class TestAddAssetQuantity(unittest.TestCase):
             self.commands["AddAssetQuantity"]["function"](
                 {
                     "account_id": self.sample.sample_account_id_1,
-                    "amount": 10.0
+                    "amount": 10
                 }
             )
         except CliException as e:
@@ -86,7 +86,7 @@ class TestAddAssetQuantity(unittest.TestCase):
                 {
                     "account_id": 123,
                     "asset_id": self.sample.sample_asset_id_1,
-                    "amount": 10.0
+                    "amount": 10
                 }
             )
         except CliException as e:
@@ -100,11 +100,11 @@ class TestAddAssetQuantity(unittest.TestCase):
                 {
                     "account_id": self.sample.sample_account_id_1,
                     "asset_id": self.sample.sample_asset_id_1,
-                    "amount": 100
+                    "amount": 100.5
                 }
             )
         except CliException as e:
-            self.assertTrue(e.args[0] == "amount is <class 'float'>")
+            self.assertTrue(e.args[0] == "amount is <class 'int'>")
         else:
             self.fail("I want to exception")
 

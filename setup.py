@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python 
 import shutil
 from setuptools.extension import Extension
 
@@ -7,7 +7,7 @@ import os
 import subprocess
 
 from setuptools.command.build_py import build_py as _build_py
-from setuptools import setup
+from setuptools import setup, find_packages
 
 def exec_generate_proto(source):
     python = shutil.which("python")
@@ -50,7 +50,7 @@ if __name__ == '__main__':
           author='Sonoko Mizuki',
           license='Apache',
           author_email='mizuki.sonoko@gmail.com',
-          packages = ['cli', 'schema'],
+          packages = find_packages(),
           ext_modules=[module_ed25519_sha3],
           include_package_data=True,
           install_requires=[
