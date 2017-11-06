@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 import shutil
 from setuptools.extension import Extension
 
@@ -6,7 +6,8 @@ import sys
 import os
 import subprocess
 
-from setuptools.command.build_py import build_py as _build_py
+#from setuptools.command.build_py import build_py as _build_py
+from setuptools.command.install import install
 from setuptools import setup, find_packages
 
 def exec_generate_proto(source):
@@ -30,7 +31,7 @@ sources.extend([ed25519_sha3_path+"/lib/" + s for s in os.listdir(ed25519_sha3_p
 module_ed25519_sha3 = Extension("cli_ed25519",include_dirs=[ed25519_sha3_path+"/lib/"], sources=sources)
 
 
-class GeneratePb(_build_py):
+class GeneratePb(install):
     def run(self):
         os.chdir("schema/")
         exec_generate_proto('block.proto')
@@ -40,7 +41,7 @@ class GeneratePb(_build_py):
         exec_generate_proto('queries.proto')
         exec_generate_proto('responses.proto')
         os.chdir("..")
-        _build_py.run(self)
+        install.run(self)
 
 if __name__ == '__main__':
     setup(
@@ -63,7 +64,7 @@ if __name__ == '__main__':
                 'ed25519'
           ],
           cmdclass={
-            'build_py': GeneratePb,
+            'install': GeneratePb,
           },
           classifiers=[
              'Programming Language :: Python :: 3.5',
