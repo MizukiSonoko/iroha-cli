@@ -3,8 +3,8 @@ import sys, os
 
 sys.path.insert(0, os.path.abspath(__file__ + "/../../cli"))
 sys.path.insert(0, os.path.abspath(__file__ + "/../../schema"))
-from cli.built_in_commands import BuildInCommand
-from cli.exception import CliException
+from iroha_cli.built_in_commands import BuildInCommand
+from iroha_cli.exception import CliException
 
 class Sample:
     def __init__(self):
