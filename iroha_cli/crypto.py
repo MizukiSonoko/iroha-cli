@@ -28,7 +28,7 @@ class KeyPair(namedtuple('KeyPair', ['raw_private_key', 'raw_public_key'])):
         return self.__encode__(self.raw_public_key)
 
 
-from cli.crypto_ed25519 import generate_keypair_ed25519, sign_ed25519, verify_ed25519
+from iroha_cli.crypto_ed25519 import generate_keypair_ed25519, sign_ed25519, verify_ed25519
 
 
 def generate_keypair():
