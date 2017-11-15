@@ -1,5 +1,5 @@
-include schema/*.proto
-include cli/cli_ed25519/lib/*.h
+include iroha_cli_schema/*.proto
+include iroha_cli/cli_ed25519/lib/*.h
 include *.py
 include requirements.txt
 recursive-include tests *.py

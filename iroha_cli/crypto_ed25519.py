@@ -6,7 +6,7 @@ import base64
 import time
 
 from collections import namedtuple
-from cli.crypto import KeyPair
+from iroha_cli.crypto import KeyPair
 
 def generate_keypair_ed25519():
     # Mind the private/public key order!

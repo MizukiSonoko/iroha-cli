@@ -3,13 +3,13 @@
 import sys
 import argparse
 
-from cli.built_in_commands import BuildInCommand
-from cli.commands import CommandList
-from cli.crypto import KeyPair
-from cli.exception import CliException
-from cli.network import generateTransaction, sendTx, generateQuery, sendQuery, waitTransaciton
-import cli.file_io as file_io
-from cli.query import QueryList
+from iroha_cli.built_in_commands import BuildInCommand
+from iroha_cli.commands import CommandList
+from iroha_cli.crypto import KeyPair
+from iroha_cli.exception import CliException
+from iroha_cli.network import generateTransaction, sendTx, generateQuery, sendQuery, waitTransaciton
+import iroha_cli.file_io as file_io
+from iroha_cli.query import QueryList
 
 BASE_NAME = "iroha-cli"
 TARGET = "iroha"

@@ -1,5 +1,5 @@
 
-from cli.exception import CliException
+from iroha_cli.exception import CliException
 from queries_pb2 import Query, GetAccount, GetSignatories, GetAccountTransactions, GetAccountAssetTransactions, \
     GetAccountAssets
 

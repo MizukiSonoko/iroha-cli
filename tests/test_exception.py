@@ -1,7 +1,7 @@
 import unittest
 import sys, os
 
-from cli.exception import CliException
+from iroha_cli.exception import CliException
 
 
 class TestException(unittest.TestCase):

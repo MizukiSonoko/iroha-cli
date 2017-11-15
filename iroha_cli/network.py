@@ -4,8 +4,8 @@ import datetime
 import binascii
 import grpc
 
-from cli import crypto
-from cli.exception import CliException
+from iroha_cli import crypto
+from iroha_cli.exception import CliException
 from endpoint_pb2_grpc import CommandServiceStub, QueryServiceStub
 from endpoint_pb2 import TxStatusRequest, TxStatus
 from primitive_pb2 import Signature

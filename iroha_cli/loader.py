@@ -1,5 +1,5 @@
 import sys
-from cli.exception import CliException
+from iroha_cli.exception import CliException
 
 BASE_NAME = "iroha-mizuki-cli"
 

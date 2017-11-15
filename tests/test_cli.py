@@ -1,13 +1,12 @@
 import unittest
 import sys, os
 
-import cli
+import iroha_cli
 
 sys.path.insert(0, os.path.abspath(__file__ + "/../../cli"))
 sys.path.insert(0, os.path.abspath(__file__ + "/../../schema"))
-from cli import commands
-from cli.exception import CliException
-
+from iroha_cli import commands
+from iroha_cli.exception import CliException
 from io import StringIO
 
 io = StringIO()
@@ -37,7 +36,7 @@ class TestBuildInCommands(unittest.TestCase):
         self.sample = Sample()
         self.skeleton_key = "skeleton"
         sys.stdout = io
-        cli.main.main(['iroha-ya-cli', 'keygen', '--make_conf','yes','--account_name', self.skeleton_key])
+        iroha_cli.main.main(['iroha-ya-cli', 'keygen', '--make_conf','yes','--account_name', self.skeleton_key])
         sys.stdout = sys.__stdout__
 
     def tearDown(self):
@@ -57,7 +56,7 @@ class TestBuildInCommands(unittest.TestCase):
 
     def test_normal_without_argv(self):
         sys.stdout = io
-        cli.main.main(['iroha-ya-cli'])
+        iroha_cli.main.main(['iroha-ya-cli'])
         sys.stdout = sys.__stdout__
         self.assertTrue('{}-mizuki-cli'.format(TARGET) in io.getvalue())
         self.assertTrue('Current support commands' in io.getvalue())
@@ -67,20 +66,20 @@ class TestBuildInCommands(unittest.TestCase):
 
     def test_config_without_config_data(self):
         sys.stdout = io
-        cli.main.main(['iroha-ya-cli', 'config'])
+        iroha_cli.main.main(['iroha-ya-cli', 'config'])
         sys.stdout = sys.__stdout__
         self.assertTrue('skeleton' in io.getvalue())
 
     def test_config(self):
         sys.stdout = io
-        cli.main.main(['iroha-ya-cli', 'config', '--config','config.yml'])
+        iroha_cli.main.main(['iroha-ya-cli', 'config', '--config','config.yml'])
         sys.stdout = sys.__stdout__
         self.assertTrue("name      : {}".format(self.skeleton_key) in io.getvalue())
         self.assertTrue("privateKey:" in io.getvalue())
 
     def test_key_gen(self):
         sys.stdout = io
-        cli.main.main(['iroha-ya-cli', 'keygen', '--account_name', self.sample.sample_keypair_path])
+        iroha_cli.main.main(['iroha-ya-cli', 'keygen', '--account_name', self.sample.sample_keypair_path])
         sys.stdout = sys.__stdout__
         self.assertTrue(os.path.exists(self.sample.sample_keypair_path + ".pub") and os.path.exists(
             self.sample.sample_keypair_path + ".pri"))
@@ -88,7 +87,7 @@ class TestBuildInCommands(unittest.TestCase):
     # It's fake... I want make_conf option require config name....
     def test_key_gen_with_config(self):
         sys.stdout = io
-        cli.main.main(['iroha-ya-cli', 'keygen', '--make_conf','yes','--account_name', self.sample.sample_keypair_path])
+        iroha_cli.main.main(['iroha-ya-cli', 'keygen', '--make_conf','yes','--account_name', self.sample.sample_keypair_path])
         sys.stdout = sys.__stdout__
         self.assertTrue(os.path.exists(self.sample.sample_keypair_path + ".pub") and os.path.exists(
             self.sample.sample_keypair_path + ".pri"))
@@ -96,7 +95,7 @@ class TestBuildInCommands(unittest.TestCase):
 
     def test_create_asset(self):
         sys.stdout = io
-        cli.main.main(['iroha-ya-cli', 'tx', 'CreateAsset', '--config','config.yml', '--domain_id', self.sample.sample_domain_id, '--asset_name', self.sample.sample_asset_id_1])
+        iroha_cli.main.main(['iroha-ya-cli', 'tx', 'CreateAsset', '--config','config.yml', '--domain_id', self.sample.sample_domain_id, '--asset_name', self.sample.sample_asset_id_1])
         sys.stdout = sys.__stdout__
 
         # I want mock grpc server....
