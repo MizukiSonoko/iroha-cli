@@ -6,27 +6,12 @@ from iroha_cli import crypto, file_io
 from iroha_cli.libs.amount import int_to_amount
 from iroha_cli.exception import CliException
 from primitive_pb2 import Amount, uint256
-from commands_pb2 import Command, CreateAsset, AddAssetQuantity, CreateAccount, CreateDomain, TransferAsset
+from commands_pb2 import *
 
 BASE_NAME = "iroha-mizuki-cli"
 
 
 class CommandList:
-    """
-            AddAssetQuantity add_asset_quantity = 1;
-            AddPeer add_peer = 2;
-            AddSignatory add_signatory = 3;
-            CreateAsset create_asset = 4;
-            CreateAccount create_account = 5;
-            CreateDomain create_domain = 6;
-            RemoveSignatory remove_sign = 7;
-            SetAccountPermissions set_permission = 8;
-            SetAccountQuorum set_quorum = 9;
-            TransferAsset transfer_asset = 10;
-            AppendRole append_role = 11;
-            CreateRole create_role = 12;
-    """
-
     def __init__(self, printInfo=False):
         self.printInfo = printInfo
         self.commands = {
@@ -45,10 +30,11 @@ class CommandList:
                     "amount": {
                         "type": int,
                         "detail": "target's asset id like japan/yen",
-                        "required": True
+                        "required": True,
+                        "converter": lambda amount: int_to_amount(amount, precision=0)
                     },
                 },
-                "function": self.AddAssetQuantity,
+                "function": self.generate("add_asset_quantity","AddAssetQuantity"),
                 "detail": "Add asset's quantity"
             },
             "CreateAccount": {
@@ -67,10 +53,11 @@ class CommandList:
                         "type": str,
                         "detail": "save to this keypair_name like mizukey, if no set, generates ${"
                                   "account_name}.pub/${account_name} ",
-                        "required": False
+                        "required": False,
+                        "command_arguments": False
                     }
                 },
-                "function": self.CreateAccount,
+                "function": self.generate("create_account","CreateAccount",self.prev_CreateAccount),
                 "detail": "CreateAccount asset's quantity"
             },
             "CreateDomain": {
@@ -81,7 +68,7 @@ class CommandList:
                         "required": True
                     }
                 },
-                "function": self.CreateDomain,
+                "function": self.generate("create_domain","CreateDomain"),
                 "detail": "Create domain in domain"
             },
             "CreateAsset": {
@@ -99,10 +86,11 @@ class CommandList:
                     "precision": {
                         "type": int,
                         "detail": "how much support .000, default 0",
-                        "required": False
+                        "required": False,
+                        "converter": lambda precision: precision if precision else 0
                     }
                 },
-                "function": self.CreateAsset,
+                "function": self.generate("create_asset","CreateAsset"),
                 "detail": "Create new asset in domain"
             },
             "TransferAsset": {
@@ -130,13 +118,33 @@ class CommandList:
                     "amount": {
                         "type": int,
                         "detail": "how much transfer",
-                        "required": True
+                        "required": True,
+                        "converter": lambda amount: int_to_amount( amount, precision=0)
                     }
                 },
-                "function": self.TransferAsset,
+                "function":self.generate("transfer_asset","TransferAsset"),
                 "detail": "transfer asset"
             }
         }
+
+    def generate(self, value_name, class_name, previous_execute = lambda argv: argv):
+        def __generate__(argv):
+            self.validate(self.commands[class_name]["option"],argv)
+            previous_execute(argv)
+            # Remove config option from constructor arguments
+            if "config" in argv:
+                argv.pop("config")
+
+            for name, value in self.commands[class_name]["option"].items():
+                # Convert value like int -> Amount
+                if "converter" in value:
+                    argv[name] = value["converter"](argv[name])
+                # 'command_arguments' is used only cli, so remove before construct command
+                if "command_arguments" in value and name in argv:
+                    argv.pop(name)
+
+            return Command(**{value_name: eval(class_name)(**argv)})
+        return __generate__
 
     def validate(self, expected, argv):
         for item in expected.items():
@@ -149,32 +157,7 @@ class CommandList:
                         str(item[1]["type"])
                     ))
 
-    def printTransaction(self, name, expected, argv):
-        if self.printInfo:
-            print("[{}] run {} ".format(BASE_NAME, name))
-            for n in expected.keys():
-                print("- {}: {}".format(n, argv[n]))
-
-    def AddAssetQuantity(self, argv):
-        name = "AddAssetQuantity"
-        argv_info = self.commands[name]["option"]
-        self.validate(argv_info, argv)
-        self.printTransaction(name, argv_info, argv)
-
-        # ToDo In now precision = 0, but when I enter 1.03, set precision = 2 automatically
-        # ToDo Correct to set Amount.value
-        return Command(add_asset_quantity=AddAssetQuantity(
-            account_id=argv["account_id"],
-            asset_id=argv["asset_id"],
-            amount=int_to_amount(argv["amount"], precision=0)
-        ))
-
-    def CreateAccount(self, argv):
-        name = "CreateAccount"
-        argv_info = self.commands[name]["option"]
-        self.validate(argv_info, argv)
-        self.printTransaction(name, argv_info, argv)
-
+    def prev_CreateAccount(self, argv):
         # ToDo validate and print check
         # I want to auto generate
         key_pair = crypto.generate_keypair()
@@ -184,44 +167,3 @@ class CommandList:
             filename_base = argv["account_name"] + "@" + argv["domain_id"]
 
         file_io.save_keypair(filename_base, key_pair)
-        return Command(create_account=CreateAccount(
-            account_name=argv["account_name"],
-            domain_id=argv["domain_id"],
-            main_pubkey=key_pair.raw_public_key
-        ))
-
-    def CreateAsset(self, argv):
-        name = "CreateAsset"
-        argv_info = self.commands[name]["option"]
-        self.validate(argv_info, argv)
-        self.printTransaction(name, argv_info, argv)
-        precision = argv.get("precision") if argv.get("precision") else 0
-        return Command(create_asset=CreateAsset(
-            asset_name=argv["asset_name"],
-            domain_id=argv["domain_id"],
-            precision= precision
-        ))
-
-    def CreateDomain(self, argv):
-        name = "CreateDomain"
-        argv_info = self.commands[name]["option"]
-        self.validate(argv_info, argv)
-        self.printTransaction(name, argv_info, argv)
-        return Command(create_domain=CreateDomain(
-            domain_name=argv["domain_name"]
-        ))
-
-    def TransferAsset(self, argv):
-        name = "CreateDomain"
-        argv_info = self.commands[name]["option"]
-        self.validate(argv_info, argv)
-        self.printTransaction(name, argv_info, argv)
-
-        # ToDo validate and print check
-        return Command(transfer_asset=TransferAsset(
-            src_account_id=argv["src_account_id"],
-            dest_account_id=argv["dest_account_id"],
-            asset_id=argv["asset_id"],
-            description=argv.get("description", ""),
-            amount=int_to_amount(argv["amount"], precision=0)
-        ))
