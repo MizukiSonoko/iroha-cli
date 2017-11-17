@@ -9,11 +9,12 @@ import subprocess
 from setuptools.command.build_py import build_py as _build_py
 from setuptools import setup, find_packages
 
-def exec_generate_proto(source):
-    python = shutil.which("python3")
-    if not python:
-        python = shutil.which("python")
+ed25519_sha3_path = "iroha_cli/cli_ed25519"
+sources = [ed25519_sha3_path+"/cli_ed25519module.c"]
+sources.extend([ed25519_sha3_path+"/lib/" + s for s in os.listdir(ed25519_sha3_path+"/lib/") if s.endswith(".c")])
+module_ed25519_sha3 = Extension("cli_ed25519",include_dirs=[ed25519_sha3_path+"/lib/"], sources=sources)
 
+def exec_generate_proto(source,python):
     protoc_command = [ python, "-m", "grpc_tools.protoc", "-I.", "--python_out=.", source]
     if subprocess.call(protoc_command) != 0:
         sys.exit(-1)
@@ -24,21 +25,23 @@ def exec_generate_proto(source):
         sys.exit(-1)
     sys.stdout.write("Generate {}_grcp_pb2.py ==> successfull\n".format(source.split('.')[0]))
 
-ed25519_sha3_path = "iroha_cli/cli_ed25519"
-sources = [ed25519_sha3_path+"/cli_ed25519module.c"]
-sources.extend([ed25519_sha3_path+"/lib/" + s for s in os.listdir(ed25519_sha3_path+"/lib/") if s.endswith(".c")])
-module_ed25519_sha3 = Extension("cli_ed25519",include_dirs=[ed25519_sha3_path+"/lib/"], sources=sources)
-
+def check_python_grpc(python):
+    protoc_command = [python, "-m", "grpc_tools.protoc", "--version"]
+    return subprocess.call(protoc_command) == 0
 
 class GeneratePb(_build_py):
     def run(self):
+        python = shutil.which("python3")
+        if not python or not check_python_grpc(python):
+            python = shutil.which("python")
+
         os.chdir("iroha_cli_schema/")
-        exec_generate_proto('block.proto')
-        exec_generate_proto('commands.proto')
-        exec_generate_proto('endpoint.proto')
-        exec_generate_proto('primitive.proto')
-        exec_generate_proto('queries.proto')
-        exec_generate_proto('responses.proto')
+        exec_generate_proto('block.proto',python)
+        exec_generate_proto('commands.proto',python)
+        exec_generate_proto('endpoint.proto',python)
+        exec_generate_proto('primitive.proto',python)
+        exec_generate_proto('queries.proto',python)
+        exec_generate_proto('responses.proto',python)
         os.chdir("..")
         _build_py.run(self)
 
