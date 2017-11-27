@@ -32,7 +32,6 @@ Contents
    :maxdepth: 2
    :caption: Getting Started🛫 / はじめに🛫
 
-   environments
    getting_started
    samples
 
