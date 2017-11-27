@@ -40,9 +40,9 @@ Contents
    :maxdepth: 2
    :caption: Tutorials✈️ / チュートリアル✈️
 
-   Generate KeyPair / Configure
-   Send transaction
-   Send query
+   generate_key_pair_configure
+   send_transaction
+   send_query
 
 .. toctree::
    :maxdepth: 2
