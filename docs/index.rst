@@ -32,9 +32,9 @@ Contents
    :maxdepth: 2
    :caption: Getting Started🛫 / はじめに🛫
 
-   environments/環境 
-   getting_started/はじめに
-   samples/サンプル
+   environments
+   getting_started
+   samples
 
 .. toctree::
    :maxdepth: 2
