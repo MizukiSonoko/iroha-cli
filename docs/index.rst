@@ -48,13 +48,13 @@ Contents
    :maxdepth: 2
    :caption: Explain of Command,Query / Command,Query等の詳細
    
-   Command
-   Query
-   Built in
+   transaction
+   query
+   built_in
 
 .. toctree::
    :maxdepth: 2
    :caption: Extension🛠 / 独自カスタム🛠
 
-   Support new command
-   Support new Query
+   add_new_command
+   add_new_query
