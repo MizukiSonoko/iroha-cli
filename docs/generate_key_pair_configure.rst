@@ -4,6 +4,7 @@ Generate KeyPair / Configure
 Irohaでは全ての処理に電子署名を必要とします。なのでIrohaを扱う上で一番最初に行うべきことは自分自身の鍵を持つことです。
 
 コマンドは
+
 .. code-block:: shell
 
    iroha-ya-cli keygen  --account_name mizuki --make_conf yes
