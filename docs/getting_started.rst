@@ -36,8 +36,9 @@ Generate key pair and config
 ------------------------------
 
 You should create keypair and config.
-| **KeyPair is very important.If you lost keypair, You willn't be able to access Iroha ledger**
-| **注意！KeyPairはアカウントと紐付いており紛失するとIrohaに対しへアクセス(Transaction/Query)ができなくなります**
+
+| **KeyPair is very important.If you lost keypair, You willn't be able to access Iroha ledger**  
+| **注意！KeyPairはアカウントと紐付いており紛失するとIrohaに対しへアクセス(Transaction/Query)ができなくなります**  
 
 .. code-block:: shell
 
@@ -53,7 +54,7 @@ You should create keypair and config.
    -rw-r--r--   1 root root   88 Nov 28 01:33 mizuki.pri
    -rw-r--r--   1 root root   44 Nov 28 01:33 mizuki.pub
 
-**Testのため、Permissionを644にしていますが、推奨されません。600にしてください
+**Testのため、Permissionを644にしていますが、推奨されません。600にしてください**
 
 Common Error
 ------------------------------
