@@ -10,7 +10,7 @@ Who uses Iroha-cli?
 --------
 
 User who wants to access Iroha ledger. **Not support user who wants to provision or manage Iroha network**  
-いろは台帳にアクセスする(Tx/Query)人を主に対象とする。台帳を管理する人は現状、対象としない
+いろは台帳にアクセスする(Tx/Query)人を主に対象とする。台帳を管理する人は現状、対象としない  
   
 What Iroha-cli has function?
 --------
@@ -23,7 +23,7 @@ CLIは以下の2つを基本機能として持つ
 In addition, supports this　　
 それに加え以下の機能を持つ　　
 
-* generate keypair,config / 秘密鍵、構成ファイルの作成 
+* generate keypair,config / 秘密鍵、構成ファイルの作成
 　　
 Contents
 --------
