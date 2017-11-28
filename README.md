@@ -4,6 +4,8 @@
 
 [![PyPI version](https://badge.fury.io/py/iroha-ya-cli.svg)](https://badge.fury.io/py/iroha-ya-cli)
 
+![screen shot](https://raw.githubusercontent.com/MizukiSonoko/iroha-cli/master/docs/screenshot/top.png)
+
 [hyperledger/iroha](https://github.com/hyperledger/iroha) is open source, I want to contribute to it...  
 
 ## Suppert version  
