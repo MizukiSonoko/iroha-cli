@@ -1,4 +1,4 @@
-include iroha_cli_schema/*.proto
+include iroha_cli_schema/*
 include iroha_cli/cli_ed25519/lib/*.h
 include *.py
 include requirements.txt
