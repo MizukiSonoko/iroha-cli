@@ -1,5 +1,5 @@
 #! /usr/bin/python
-
+import os
 import sys
 import argparse
 
@@ -8,37 +8,10 @@ from iroha_cli.commands import CommandList
 from iroha_cli.crypto import KeyPair
 from iroha_cli.exception import CliException
 from iroha_cli.network import generateTransaction, sendTx, generateQuery, sendQuery, waitTransaciton
-import iroha_cli.file_io as file_io
 from iroha_cli.query import QueryList
 
 BASE_NAME = "iroha-cli"
 TARGET = "iroha"
-
-
-class Context:
-    name = None
-    public_key = None
-    private_key = None
-    location = None
-    key_pair = None
-
-    def __init__(self, filepath):
-        try:
-            conf = file_io.load_config(filepath)
-        except:
-            self.loaded = False
-            return
-        self.loaded = True
-        self.name = conf.get('name')
-        self.public_key = conf.get('publicKey')
-        self.private_key = conf.get('privateKey')
-        address = conf.get('address')
-        port = conf.get('port')
-
-        self.location = "{}:{}".format(address, str(port))
-        self.key_pair = KeyPair(
-            raw_private_key=KeyPair.decode(self.private_key),
-            raw_public_key=KeyPair.decode(self.public_key))
 
 
 class ChiekuiCli:
@@ -46,40 +19,43 @@ class ChiekuiCli:
         self.tx_commands = CommandList().commands
         self.queries = QueryList().queries
         self.built_in_commands = BuildInCommand().commands
-        self.context = None
+
+        self.account_id = None
+        self.hostname = None
 
         # ================================
         #              Parser
         # ================================
-        self.parser = argparse.ArgumentParser(description='Cli of {}'.format(TARGET))
-        _sub_parser = self.parser.add_subparsers()
+        self.action_parser = argparse.ArgumentParser(description='Cli of {}'.format(TARGET))
+        self.meta_parser = argparse.ArgumentParser(description='Cli of {}'.format(TARGET))
+
+        self.meta_parser.add_argument("--hostname", type=str, required=True,
+                                      help="Target hostname")
+        self.meta_parser.add_argument("--account_id", type=str, required=True,
+                                      help="My account_id")
+
+        _sub_parser = self.action_parser.add_subparsers()
 
         # parse: transaction
-        parse_tx = _sub_parser.add_parser("tx")
-        sup_parser_tx = parse_tx.add_subparsers()
         for cmd in self.tx_commands:
-            _parser = sup_parser_tx.add_parser(cmd, help='{} help'.format(cmd))
+            _parser = _sub_parser.add_parser(cmd, help='{} help'.format(cmd))
             for name, val in self.tx_commands[cmd]['option'].items():
                 _parser.add_argument("--{}".format(name), type=val["type"], required=val["required"],
                                      help=val["detail"])
-            _parser.add_argument("--config", type=str, required=False, help="config.yml's path")
 
         # parse: query
-        parse_query = _sub_parser.add_parser("query")
-        sup_parser_query = parse_query.add_subparsers()
         for qry in self.queries:
-            _parser = sup_parser_query.add_parser(qry, help='{} help'.format(qry))
+            _parser = _sub_parser.add_parser(qry, help='{} help'.format(qry))
             for name, val in self.queries[qry]['option'].items():
                 _parser.add_argument("--{}".format(name), type=val["type"], required=val["required"],
                                      help=val["detail"])
-            _parser.add_argument("--config", type=str, required=False, help="config.yml's path")
 
         # parse: built in command
         for cmd_name, cmd_val in self.built_in_commands.items():
             _parser = _sub_parser.add_parser(cmd_name, help='{} help'.format(cmd_name))
             for name, val in self.built_in_commands[cmd_name]['option'].items():
-                _parser.add_argument("--{}".format(name), type=val["type"], required=val["required"],help=val["detail"])
-            _parser.add_argument("--config", type=str, required=False,help="config.yml's path")
+                _parser.add_argument("--{}".format(name), type=val["type"], required=val["required"],
+                                     help=val["detail"])
 
     def print_introduction(self):
         print(
@@ -103,24 +79,26 @@ class ChiekuiCli:
     def exec_tx(self, cmd, argv):
         command = self.tx_commands[cmd]["function"](vars(argv))
         if command:
-            if not self.context.loaded:
-                print("Config data is not loaded! to send tx require config")
+
+            if not self.key_pair:
+                print("Key pair is not loaded! to send tx require key pair")
                 return -1
 
-            tx, tx_hash = generateTransaction(self.context.name, [command], self.context.key_pair)
-            if not sendTx(self.context.location, tx):
+            tx, tx_hash = generateTransaction(self.account_id, [command], self.key_pair)
+            if not sendTx(self.hostname, tx):
                 print(
                     "Transaction is not arrived...\n"
-                    "Could you ckeck this => {}\n".format(self.context.location)
+                    "Could you ckeck this => {}\n".format(self.hostname)
                 )
                 return -1
             try:
-                waitTransaciton(self.context.location, tx_hash)
+                waitTransaciton(self.hostname, tx_hash)
             except Exception as e:
+                print(e.args)
                 print(
-                        "failed to executed the transaction \n"
-                        "error => {}\n".format(e)
-                        )
+                    "failed to executed the transaction \n"
+                    "error => {}\n".format(e)
+                )
                 return -1
 
         else:
@@ -130,13 +108,9 @@ class ChiekuiCli:
     def exec_query(self, qry, argv):
         qry = self.queries[qry]["function"](vars(argv))
         if qry:
-            if not self.context.loaded:
-                print("Config data is not loaded! to send tx require config")
-                return False
-            query = generateQuery(self.context.name, qry, self.context.key_pair)
-
+            query = generateQuery(self.account_id, qry, self.key_pair)
             try:
-                res = sendQuery(self.context.location, query)
+                res = sendQuery(self.hostname, query)
                 print(res)
             except CliException as e:
                 print(e)
@@ -146,30 +120,46 @@ class ChiekuiCli:
             return -1
 
     def exec(self, argv):
-        parsed_argv = self.parser.parse_args(argv[1:])
+
         if len(argv) < 2:
             return self.print_introduction()
 
-        self.context = Context(vars(parsed_argv).get('config'))
-        #
-        # if not set --config. load current directory's config.yml
-        #
-        if not self.context.loaded:
-            self.context = Context('config.yml')
+        meta_parsed_argv = self.meta_parser.parse_args(argv[1:3])
+        parsed_argv = self.action_parser.parse_args(argv[3:])
 
-        if argv[1] == 'tx':
-            return self.exec_tx(argv[2], parsed_argv)
+        self.account_id = vars(meta_parsed_argv)["account_id"]
+        self.hostname = vars(meta_parsed_argv)["hostname"]
 
-        elif argv[1] == 'query':
-            return self.exec_query(argv[2], parsed_argv)
+        # ==========
+        # Load key pair
+        # ToDo: separate from this
+        self.key_pair = None
+        try:
+            with open("{}/.irohac/{}.pub".format(os.environ['HOME'],self.account_id), "r") as pubKeyFile:
+                publicKey = pubKeyFile.read()
+            with open("{}/.irohac/{}".format(os.environ['HOME'],self.hostname), "r") as priKeyFile:
+                privateKey = priKeyFile.read()
+            self.key_pair = KeyPair(
+                raw_private_key=KeyPair.decode(publicKey),
+                raw_public_key=KeyPair.decode(privateKey)
+            )
+        except FileNotFoundError:
+            raise CliException("File not found : {}/.irohac/{}".format(os.environ['HOME'],self.hostname))
+
+        if argv[3] in self.tx_commands:
+            return self.exec_tx(argv[3], parsed_argv)
+
+        elif argv[3] in self.queries:
+            return self.exec_query(argv[3], parsed_argv)
 
         if argv[1] in self.built_in_commands:
-            return self.built_in_commands[argv[1]]["function"]( vars(parsed_argv), self.context)
-        
+            return self.built_in_commands[argv[1]]["function"](vars(parsed_argv))
+
 
 def main(argv=sys.argv):
     cli = ChiekuiCli()
     return cli.exec(argv)
+
 
 if __name__ == "__main__":
     exit_code = main()
