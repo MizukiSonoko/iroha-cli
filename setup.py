@@ -78,6 +78,6 @@ if __name__ == '__main__':
           ],
           entry_points={
           'console_scripts':
-            ['iroha-ya-cli=iroha_cli.main:main']
+            ['irohac=iroha_cli.main:main']
           }
     )
