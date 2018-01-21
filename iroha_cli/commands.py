@@ -62,7 +62,12 @@ class CommandList:
             },
             "CreateDomain": {
                 "option": {
-                    "domain_name": {
+                    "domain_id": {
+                        "type": str,
+                        "detail": "new domain name like japan",
+                        "required": True
+                    },
+                    "default_role": {
                         "type": str,
                         "detail": "new domain name like japan",
                         "required": True
