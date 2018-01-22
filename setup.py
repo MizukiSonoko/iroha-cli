@@ -48,7 +48,7 @@ class GeneratePb(_build_py):
 if __name__ == '__main__':
     setup(
           name='iroha-ya-cli',
-          version='1.2.9',
+          version='1.2.10',
           description='Cli for hyperledger/iroha',
           author='Sonoko Mizuki',
           license='Apache',
@@ -62,8 +62,7 @@ if __name__ == '__main__':
                 'protobuf',
                 'PyYAML',
 
-                'sha3',
-                'ed25519'
+                'ed25519-python'
           ],
           cmdclass={
             'build_py': GeneratePb,
