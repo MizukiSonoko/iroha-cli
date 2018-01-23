@@ -33,7 +33,6 @@ def generateTransaction(account_id, commands, key_pair):
             Signature(pubkey=key_pair.raw_public_key(), signature=base64.b64decode(sign))
         ]
     )
-    # print(tx)
     return tx, payload_hash
 
 
