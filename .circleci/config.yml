@@ -9,7 +9,7 @@ jobs:
 
       - run:
           name: Install cmake
-          command: sudo apt install cmake -y
+          command: sudo apt install cmake git -y
 
       - run: python3 -m venv py3
 
