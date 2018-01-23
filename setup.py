@@ -9,11 +9,6 @@ import subprocess
 from setuptools.command.build_py import build_py as _build_py
 from setuptools import setup, find_packages
 
-ed25519_sha3_path = "iroha_cli/cli_ed25519"
-sources = [ed25519_sha3_path+"/cli_ed25519module.c"]
-sources.extend([ed25519_sha3_path+"/lib/" + s for s in os.listdir(ed25519_sha3_path+"/lib/") if s.endswith(".c")])
-module_ed25519_sha3 = Extension("cli_ed25519",include_dirs=[ed25519_sha3_path+"/lib/"], sources=sources)
-
 def exec_generate_proto(source,python):
     protoc_command = [ python, "-m", "grpc_tools.protoc", "-I.", "--python_out=.", source]
     if subprocess.call(protoc_command) != 0:
@@ -54,7 +49,6 @@ if __name__ == '__main__':
           license='Apache',
           author_email='mizuki.sonoko@gmail.com',
           packages = find_packages(),
-          ext_modules=[module_ed25519_sha3],
           include_package_data=True,
           install_requires=[
                 'grpcio',
