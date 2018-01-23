@@ -1,4 +1,5 @@
 #! /usr/bin/python
+import base64
 import os
 import sys
 import argparse
@@ -137,11 +138,11 @@ class ChiekuiCli:
         try:
             with open("{}/.irohac/{}.pub".format(os.environ['HOME'],self.account_id), "r") as pubKeyFile:
                 publicKey = pubKeyFile.read()
-            with open("{}/.irohac/{}".format(os.environ['HOME'],self.hostname), "r") as priKeyFile:
+            with open("{}/.irohac/{}".format(os.environ['HOME'],self.account_id), "r") as priKeyFile:
                 privateKey = priKeyFile.read()
             self.key_pair = KeyPair(
-                raw_private_key=KeyPair.decode(publicKey),
-                raw_public_key=KeyPair.decode(privateKey)
+                base64.b64encode(bytearray.fromhex(publicKey)),
+                base64.b64encode(bytearray.fromhex(privateKey))
             )
         except FileNotFoundError:
             raise CliException("File not found : {}/.irohac/{}".format(os.environ['HOME'],self.hostname))
