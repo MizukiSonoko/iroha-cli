@@ -4,9 +4,6 @@ jobs:
     docker:
       - image: circleci/python:3.5.4
 
-    environment:
-      PATH: ~/cmake-3.6.2-Linux-x86_64/bin:$PATH
-
     steps:
       - checkout
 
@@ -26,10 +23,8 @@ jobs:
               echo "CMake found"
             fi
 
-      - save_cache:
-          key: cmake
-          paths:
-            - ~/cmake-3.6.2-Linux-x86_64
+      - run: echo 'export PATH="~/cmake-3.6.2-Linux-x86_64/bin:$PATH"' >> ~/.bashrc
+      - run: source ~/.bashrc
 
       - save_cache:
           key: cmake
