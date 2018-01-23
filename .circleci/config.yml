@@ -7,32 +7,11 @@ jobs:
     steps:
       - checkout
 
-      - restore_cache:
-          keys:
-            - cmake
-          paths:
-            - ~/cmake-3.6.2-Linux-x86_64
-
       - run:
           name: Install cmake
-          command: |
-            if [ ! -d ~/cmake-3.6.2-Linux-x86_64 ]; then
-              echo "Not found CMake!"
-              cd ~ && wget --quiet https://cmake.org/files/v3.6/cmake-3.6.2-Linux-x86_64.tar.gz && tar -xvf cmake-3.6.2-Linux-x86_64.tar.gz
-            else
-              echo "CMake found"
-            fi
-
-      - save_cache:
-          key: cmake
-          paths:
-            - ~/cmake-3.6.2-Linux-x86_64
-
+          command: apt install cmake -y
 
       - run: python3 -m venv py3
-
-      - run: echo 'export PATH="~/cmake-3.6.2-Linux-x86_64/bin:$PATH"' >> ~/.bashrc
-      - run: source ~/.bashrc
 
       - run:
           command: |
