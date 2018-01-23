@@ -49,7 +49,7 @@ class CommandList:
                         "detail": "new account will be in this domain like japan",
                         "required": True
                     },
-                    "keypair_name": {
+                    "main_pubkey": {
                         "type": str,
                         "detail": "save to this keypair_name like mizukey, if no set, generates ${"
                                   "account_name}.pub/${account_name} ",
