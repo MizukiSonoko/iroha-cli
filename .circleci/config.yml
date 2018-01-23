@@ -27,6 +27,7 @@ jobs:
       - run: ls ~/cmake-3.6.2-Linux-x86_64/bin
       - run: echo 'export PATH="~/cmake-3.6.2-Linux-x86_64/bin:$PATH"' >> ~/.bashrc; source ~/.bashrc;
       - run: cat ~/.bashrc
+      - run: source ~/.bashrc
 
       - save_cache:
           key: cmake
