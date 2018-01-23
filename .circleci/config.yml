@@ -23,12 +23,6 @@ jobs:
               echo "CMake found"
             fi
 
-      - run: ls ~
-      - run: ls ~/cmake-3.6.2-Linux-x86_64/bin
-      - run: echo 'export PATH="~/cmake-3.6.2-Linux-x86_64/bin:$PATH"' >> ~/.bashrc; source ~/.bashrc;
-      - run: cat ~/.bashrc
-      - run: source ~/.bashrc
-
       - save_cache:
           key: cmake
           paths:
@@ -37,7 +31,10 @@ jobs:
 
       - run: python3 -m venv py3
 
-      - run: 
+      - run: echo 'export PATH="~/cmake-3.6.2-Linux-x86_64/bin:$PATH"' >> ~/.bashrc
+      - run: source ~/.bashrc
+
+      - run:
           command: |
             . py3/bin/activate
             pip install -r ./requirements.txt
