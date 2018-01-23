@@ -23,7 +23,10 @@ jobs:
               echo "CMake found"
             fi
 
-      - run: echo 'export PATH="~/cmake-3.6.2-Linux-x86_64/bin:$PATH"' >> ~/.bashrc; source ~/.bashrc; cmake --version
+      - run: ls ~
+      - run: ls ~/cmake-3.6.2-Linux-x86_64/bin
+      - run: echo 'export PATH="~/cmake-3.6.2-Linux-x86_64/bin:$PATH"' >> ~/.bashrc; source ~/.bashrc;
+      - run: cat ~/.bashrc
 
       - save_cache:
           key: cmake
