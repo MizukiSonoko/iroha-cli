@@ -30,9 +30,9 @@ class ChiekuiCli:
         self.action_parser = argparse.ArgumentParser(description='Cli of {}'.format(TARGET))
         self.meta_parser = argparse.ArgumentParser(description='Cli of {}'.format(TARGET))
 
-        self.meta_parser.add_argument("--hostname", type=str, required=True,
+        self.meta_parser.add_argument("--hostname", type=str, required=False,
                                       help="Target hostname")
-        self.meta_parser.add_argument("--account_id", type=str, required=True,
+        self.meta_parser.add_argument("--account_id", type=str, required=False,
                                       help="My account_id")
 
         _sub_parser = self.action_parser.add_subparsers()
@@ -128,6 +128,16 @@ class ChiekuiCli:
         meta_parsed_argv = self.meta_parser.parse_args(argv[1:3])
         parsed_argv = self.action_parser.parse_args(argv[3:])
 
+        # There is action not requiring transaction / query in built-in-command
+        if argv[1] in self.built_in_commands:
+            return self.built_in_commands[argv[1]]["function"](vars(parsed_argv))
+
+        # Sending transaction / query is require creator's account_id and target hostname
+        if vars(meta_parsed_argv)["account_id"] is None or \
+                        vars(meta_parsed_argv)["hostname"] is None:
+            print("Require hostname and account_id")
+            return -1
+
         self.account_id = vars(meta_parsed_argv)["account_id"]
         self.hostname = vars(meta_parsed_argv)["hostname"]
 
@@ -136,25 +146,22 @@ class ChiekuiCli:
         # ToDo: separate from this
         self.key_pair = None
         try:
-            with open("{}/.irohac/{}.pub".format(os.environ['HOME'],self.account_id), "r") as pubKeyFile:
+            with open("{}/.irohac/{}.pub".format(os.environ['HOME'], self.account_id), "r") as pubKeyFile:
                 publicKey = pubKeyFile.read()
-            with open("{}/.irohac/{}".format(os.environ['HOME'],self.account_id), "r") as priKeyFile:
+            with open("{}/.irohac/{}".format(os.environ['HOME'], self.account_id), "r") as priKeyFile:
                 privateKey = priKeyFile.read()
             self.key_pair = KeyPair(
                 base64.b64encode(bytearray.fromhex(publicKey)),
                 base64.b64encode(bytearray.fromhex(privateKey))
             )
         except FileNotFoundError:
-            raise CliException("File not found : {}/.irohac/{}".format(os.environ['HOME'],self.hostname))
+            raise CliException("File not found : {}/.irohac/{}".format(os.environ['HOME'], self.hostname))
 
         if argv[3] in self.tx_commands:
             return self.exec_tx(argv[3], parsed_argv)
 
         elif argv[3] in self.queries:
             return self.exec_query(argv[3], parsed_argv)
-
-        if argv[1] in self.built_in_commands:
-            return self.built_in_commands[argv[1]]["function"](vars(parsed_argv))
 
 
 def main(argv=sys.argv):
