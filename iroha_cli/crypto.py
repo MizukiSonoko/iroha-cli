@@ -1,6 +1,5 @@
 import base64
 
-import sha3
 import os
 
 from collections import namedtuple
