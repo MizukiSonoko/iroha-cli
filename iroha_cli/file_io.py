@@ -4,6 +4,7 @@ from iroha_cli.exception import CliException
 
 BASE_NAME = "iroha-mizuki-cli"
 
+
 def load_config(file_path):
     if not file_path:
         raise CliException("File path is not setted")
@@ -83,19 +84,22 @@ def save_config(filename_base, data):
         raise CliException("Cannot open : {name}".format(name=conf_path))
 
 
-def save_keypair(filename_base, key_pair):
+def save_keypair(account_id, key_pair):
+    base = '{}/.irohac'.format(os.environ['HOME'])
+    os.makedirs('{}/.irohac'.format(os.environ['HOME']), exist_ok=True)
     try:
-        if os.path.exists(filename_base + ".pub") or os.path.exists(filename_base + ".pri") :
-            raise CliException("Aleady key pair '{name}' exists!! ".format(name=filename_base))
-        with open(filename_base + ".pub", "w") as pub:
+        if os.path.exists("{}/{}.pub".format(base, account_id)) or \
+                os.path.exists("{}/{}".format(base, account_id)):
+            raise CliException("Aleady key pair '{name}' exists!! ".format(name=account_id))
+
+        with open("{}/{}.pub".format(base, account_id), "w") as pub:
             pub.write(key_pair.public_key.decode())
     except (OSError, IOError) as e:
-        print(e)
-        raise CliException("Cannot open : {name}".format(name=filename_base + ".pub"))
+        raise CliException("Cannot save : {name}".format(name="{}/{}.pub".format(base, account_id)))
 
     try:
-        with open(filename_base + ".pri", "w") as pub:
+        with open("{}/{}".format(base, account_id), "w") as pub:
             pub.write(key_pair.private_key.decode())
     except (OSError, IOError) as e:
         print(e)
-        raise CliException("Cannot open : {name}".format(name=filename_base + ".pri"))
+        raise CliException("Cannot save : {name}".format(name="{}/{}".format(base, account_id)))
