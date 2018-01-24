@@ -134,19 +134,17 @@ class TestCreateAccount(unittest.TestCase):
         self.assertTrue(command.create_account.account_name == self.sample.sample_account_name)
         self.assertTrue(command.create_account.domain_id == self.sample.sample_domain_id)
         kaypair_name = self.sample.sample_account_name +"@"+ self.sample.sample_domain_id
-        self.assertTrue(os.path.exists(kaypair_name+".pub") and os.path.exists(kaypair_name+".pri"))
 
     def test_normal_command_generate(self):
         command = self.commands["CreateAccount"]["function"](
             {"account_name": self.sample.sample_account_name,
              "domain_id": self.sample.sample_domain_id,
-             "keypair_name": self.sample.sample_keypair_path
+             "main_pubkey": self.sample.sample_keypair_path
              }
         )
         self.assertTrue(command.create_account)
         self.assertTrue(command.create_account.account_name == self.sample.sample_account_name)
         self.assertTrue(command.create_account.domain_id == self.sample.sample_domain_id)
-        self.assertTrue(os.path.exists(self.sample.sample_keypair_path+".pub") and os.path.exists(self.sample.sample_keypair_path+".pri"))
 
     def test_no_account_name_command_generate(self):
         try:
@@ -179,11 +177,11 @@ class TestCreateAccount(unittest.TestCase):
                 {
                    "account_name": self.sample.sample_account_name,
                    "domain_id": self.sample.sample_domain_id,
-                   "keypair_name": 1234
+                   "main_pubkey": 1234
                  }
             )
         except CliException as e:
-            self.assertTrue(e.args[0] == "keypair_name is <class 'str'>")
+            self.assertTrue(e.args[0] == "main_pubkey is <class 'str'>")
         else:
             self.fail("I want to exception")
 

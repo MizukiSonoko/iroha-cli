@@ -9,11 +9,6 @@ import subprocess
 from setuptools.command.build_py import build_py as _build_py
 from setuptools import setup, find_packages
 
-ed25519_sha3_path = "iroha_cli/cli_ed25519"
-sources = [ed25519_sha3_path+"/cli_ed25519module.c"]
-sources.extend([ed25519_sha3_path+"/lib/" + s for s in os.listdir(ed25519_sha3_path+"/lib/") if s.endswith(".c")])
-module_ed25519_sha3 = Extension("cli_ed25519",include_dirs=[ed25519_sha3_path+"/lib/"], sources=sources)
-
 def exec_generate_proto(source,python):
     protoc_command = [ python, "-m", "grpc_tools.protoc", "-I.", "--python_out=.", source]
     if subprocess.call(protoc_command) != 0:
@@ -48,13 +43,12 @@ class GeneratePb(_build_py):
 if __name__ == '__main__':
     setup(
           name='iroha-ya-cli',
-          version='1.2.9',
+          version='1.2.10',
           description='Cli for hyperledger/iroha',
           author='Sonoko Mizuki',
           license='Apache',
           author_email='mizuki.sonoko@gmail.com',
           packages = find_packages(),
-          ext_modules=[module_ed25519_sha3],
           include_package_data=True,
           install_requires=[
                 'grpcio',
@@ -62,8 +56,7 @@ if __name__ == '__main__':
                 'protobuf',
                 'PyYAML',
 
-                'sha3',
-                'ed25519'
+                'ed25519-python'
           ],
           cmdclass={
             'build_py': GeneratePb,
@@ -78,6 +71,6 @@ if __name__ == '__main__':
           ],
           entry_points={
           'console_scripts':
-            ['iroha-ya-cli=iroha_cli.main:main']
+            ['irohac=iroha_cli.main:main']
           }
     )

@@ -15,6 +15,9 @@ from responses_pb2 import ErrorResponse
 
 from google.protobuf.json_format import MessageToJson
 
+MAX_POLLING_TIME = 10
+
+
 def generateTransaction(account_id, commands, key_pair):
     payload = Transaction.Payload(
         commands=commands,
@@ -27,11 +30,11 @@ def generateTransaction(account_id, commands, key_pair):
     tx = Transaction(
         payload=payload,
         signature=[
-            Signature(pubkey=key_pair.raw_public_key, signature=sign)
+            Signature(pubkey=key_pair.raw_public_key(), signature=base64.b64decode(sign))
         ]
     )
-    #print(tx)
     return tx, payload_hash
+
 
 def waitTransaciton(location, tx_hash):
     payload = TxStatusRequest(tx_hash=tx_hash)
@@ -73,6 +76,7 @@ def generateQuery(account_id, qry, key_pair):
     )
     return query
 
+
 def sendTxStatus(location, tx_status):
     try:
         channel = grpc.insecure_channel(location)
@@ -83,7 +87,7 @@ def sendTxStatus(location, tx_status):
               "- Server is active?: {} \n"
               "- What's happen?   : {} \n"
               .format(e.is_active(), e.details())
-        )
+              )
         return False
 
 
@@ -98,7 +102,7 @@ def sendTx(location, tx):
               "- Server is active?: {} \n"
               "- What's happen?   : {} \n"
               .format(e.is_active(), e.details())
-        )
+              )
         return False
 
 
@@ -142,4 +146,4 @@ def sendQuery(location, query):
         return MessageToJson(result)
     except grpc.RpcError as e:
         raise CliException("[Grpc] Server({location}) is {status}, {detail}".format(
-            location=location,status=e.is_active(),detail=e.details()))
+            location=location, status=e.is_active(), detail=e.details()))

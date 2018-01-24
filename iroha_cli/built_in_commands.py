@@ -14,14 +14,6 @@ class BuildInCommand:
 
     def __init__(self):
         self.commands = {
-            "config": {
-                "option": {},
-                "function": self.config,
-                "detail": " Print current state \n"
-                          "   - name\n"
-                          "   - publicKey\n"
-                          "   - privateKey\n"
-            },
             "keygen": {
                 "option": {
                     "account_name": {
@@ -54,24 +46,7 @@ class BuildInCommand:
                         str(item[1]["type"])
                     ))
 
-    def config(self, argv, context):
-        if not context.loaded:
-            print("Config data is not loaded!")
-            return
-        print(
-            "\n"
-            "  Config  \n"
-            " =========\n"
-        )
-        print(" name      : {}".format(context.name))
-        print(" publicKey : {}".format(context.public_key))
-        print(" privateKey: {}".format(
-            context.private_key[:5] + "**...**" + context.private_key[-5:])
-        )
-        print(" targetPeer: {}\n".format(context.location))
-        return True
-
-    def keygen(self, argv,context = None):
+    def keygen(self, argv):
         name = "keygen"
         argv_info = self.commands[name]["option"]
         self.validate(argv_info, argv)
