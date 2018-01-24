@@ -43,7 +43,7 @@ class GeneratePb(_build_py):
 if __name__ == '__main__':
     setup(
           name='iroha-ya-cli',
-          version='1.2.10',
+          version='2.0.0',
           description='Cli for hyperledger/iroha',
           author='Sonoko Mizuki',
           license='Apache',
