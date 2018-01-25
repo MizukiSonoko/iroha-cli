@@ -46,4 +46,3 @@ class BuildInCommand:
         key_pair = crypto.generate_keypair()
         account_id = argv["account_id"]
         file_io.save_keypair(account_id, key_pair)
-
