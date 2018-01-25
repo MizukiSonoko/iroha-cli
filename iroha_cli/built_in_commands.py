@@ -49,7 +49,7 @@ class BuildInCommand:
         self.validate(argv_info, argv)
 
         key_pair = crypto.generate_keypair()
-        if "keypair_name" in argv:
+        if "keypair_name" in argv and argv["keypair_name"] != None:
             file_io.save_keypair(argv["keypair_name"], key_pair)
         else:
             file_io.save_keypair(argv["account_id"], key_pair)
