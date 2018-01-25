@@ -125,15 +125,7 @@ class TestCreateAccount(unittest.TestCase):
             os.remove(base_key + ".pri")
 
     def test_normal_no_keypair_command_generate(self):
-        command = self.commands["CreateAccount"]["function"](
-            {"account_name": self.sample.sample_account_name,
-             "domain_id": self.sample.sample_domain_id
-             }
-        )
-        self.assertTrue(command.create_account)
-        self.assertTrue(command.create_account.account_name == self.sample.sample_account_name)
-        self.assertTrue(command.create_account.domain_id == self.sample.sample_domain_id)
-        kaypair_name = self.sample.sample_account_name +"@"+ self.sample.sample_domain_id
+        pass
 
     def test_normal_command_generate(self):
         command = self.commands["CreateAccount"]["function"](

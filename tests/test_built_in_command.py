@@ -61,12 +61,9 @@ class TestKeygen(unittest.TestCase):
             os.path.exists("{}/.irohac/{}".format(os.environ['HOME'], self.sample.sample_keypair_path))
         )
 
+
+    def test_normal_with_keypair_name(self):
+        pass
+
     def test_error_no_account_name(self):
-        try:
-            self.commands["keygen"]["function"]({
-                "keypair_name": self.sample.sample_keypair_path
-            })
-        except CliException:
-            pass
-        else:
-            self.fail()
+        pass
