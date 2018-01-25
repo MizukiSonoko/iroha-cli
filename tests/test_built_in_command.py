@@ -43,7 +43,7 @@ class TestKeygen(unittest.TestCase):
         deleteKeyIfExists(self.sample.sample_account_name)
 
     def test_normal_with_account_name(self):
-        command = self.commands["keygen"]["function"](
+        self.commands["keygen"]["function"](
             {"account_id": self.sample.sample_account_name}
         )
         self.assertTrue(
@@ -52,7 +52,7 @@ class TestKeygen(unittest.TestCase):
         )
 
     def test_normal_with_keypair_name(self):
-        command = self.commands["keygen"]["function"](
+        self.commands["keygen"]["function"](
             {"account_id": self.sample.sample_account_name,
             "keypair_name": self.sample.sample_keypair_path}
         )
