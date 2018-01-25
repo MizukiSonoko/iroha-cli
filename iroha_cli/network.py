@@ -72,7 +72,7 @@ def generateQuery(account_id, qry, key_pair):
     sign = crypto.sign(key_pair, payload_hash)
     query = Query(
         payload=payload,
-        signature=Signature(pubkey=key_pair.raw_public_key, signature=base64.b64decode(sign))
+        signature=Signature(pubkey=key_pair.raw_public_key(), signature=base64.b64decode(sign))
     )
     return query
 
