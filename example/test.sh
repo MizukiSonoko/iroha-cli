@@ -10,11 +10,17 @@
 IROHA_HOST=localhost:50051
 CREATOR_ID=admin@test
 
+if [ "$(uname -m)" = "armv7l" ]; then
+  PROJECT=arm32v7
+else
+  PROJECT=hyperledger
+fi
+
 function send {
   echo "=== $* ==="
   read junk
 
-  docker run -t --rm --name irohac -v $(pwd):/root/.irohac hyperledger/irohac irohac --hostname=${IROHA_HOST} --account_id=${CREATOR_ID} $*
+  docker run -t --rm --name irohac -v $(pwd):/root/.irohac ${PROJECT}/irohac irohac --hostname=${IROHA_HOST} --account_id=${CREATOR_ID} $*
 }
 
 send CreateDomain --default_role user --domain_id iroha

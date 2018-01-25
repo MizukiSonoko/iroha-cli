@@ -14,8 +14,31 @@
 
 .PHONY: all test
 
+UKERNEL := $(shell uname -s)
+UMACHINE := $(shell uname -m)
+
+ifeq ($(UKERNEL),Linux)
+  ifeq ($(UMACHINE),x86_64)
+    PROJECT := hyperledger
+    DOCKER := Dockerfile
+  endif
+  ifeq ($(UMACHINE),armv7l)
+    PROJECT := arm32v7
+    DOCKER := Dockerfile.arm32v7
+  endif
+endif
+
+ifeq ($(UKERNEL),Darwin)
+  PROJECT := hyperledger
+  DOCKER := Dockerfile
+endif
+
+ifeq ($(DOCKER), )
+$(error This platform "$(UKERNEL)/$(UMACHINE)" in not supported.)
+endif
+
 all:
-	cd docker; docker build --rm -t hyperledger/irohac .
+	cd docker; docker build --rm -t $(PROJECT)/irohac -f $(DOCKER) .
 
 test:
 	cd example; bash test.sh
