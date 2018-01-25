@@ -35,17 +35,18 @@ def generateTransaction(account_id, commands, key_pair):
     )
     return tx, payload_hash
 
-
 def waitTransaciton(location, tx_hash):
-    payload = TxStatusRequest(tx_hash=tx_hash)
+    payload = TxStatusRequest(tx_hash= tx_hash)
     not_received_cnt = 0
     while True:
         result = sendTxStatus(location, payload)
 
         if result.tx_status == TxStatus.Value('STATELESS_VALIDATION_FAILED'):
+            print('stateless validation failed')
             raise Exception('stateless validation failed')
 
         elif result.tx_status == TxStatus.Value('STATEFUL_VALIDATION_FAILED'):
+            print('stateful validation failed')
             raise Exception('stateful validation failed')
 
         elif result.tx_status == TxStatus.Value('NOT_RECEIVED'):
