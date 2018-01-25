@@ -192,9 +192,7 @@ class CommandList:
         key_pair = crypto.generate_keypair()
         if "main_pubkey" in argv and argv["main_pubkey"] != None:
             main_pubkey = argv["main_pubkey"]
-            print("main:{}".format(main_pubkey))
             file_io.save_keypair(main_pubkey, key_pair)
         else:
             account_id = argv["account_name"] + "@" + argv["domain_id"]
-            print("account_id:{}".format(account_id))
             file_io.save_keypair(account_id, key_pair)
