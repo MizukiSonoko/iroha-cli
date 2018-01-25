@@ -94,8 +94,10 @@ class ChiekuiCli:
                 return -1
             try:
                 waitTransaciton(self.hostname, tx_hash)
+            except TimeoutError as t:
+                pass
             except Exception as e:
-                print(e.args)
+                print(e)
                 print(
                     "failed to executed the transaction \n"
                     "error => {}\n".format(e)
