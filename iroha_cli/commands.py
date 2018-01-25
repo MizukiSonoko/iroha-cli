@@ -125,7 +125,7 @@ class CommandList:
                         "type": int,
                         "detail": "how much transfer",
                         "required": True,
-                        "converter": lambda amount: int_to_amount( amount, precision=0)
+                        "converter": lambda amount,argv: int_to_amount( amount, precision=0)
                     }
                 },
                 "function":self.generate("transfer_asset","TransferAsset"),
