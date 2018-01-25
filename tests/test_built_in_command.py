@@ -22,6 +22,13 @@ class Sample:
         self.sample_account_name = "mizuki"
         self.sample_keypair_path = "mizuki_key"
 
+
+def deleteKeyIfExists(account_id):
+    if os.path.exists("{}/.irohac/{}.pub".format(os.environ['HOME'], account_id)):
+        os.remove("{}/.irohac/{}.pub".format(os.environ['HOME'], account_id))
+    if os.path.exists("{}/.irohac/{}".format(os.environ['HOME'], account_id)):
+        os.remove("{}/.irohac/{}".format(os.environ['HOME'], account_id))
+
 class TestKeygen(unittest.TestCase):
 
     def setUp(self):
@@ -31,25 +38,28 @@ class TestKeygen(unittest.TestCase):
     def tearDown(self):
         base = self.sample.sample_account_name + "@" + self.sample.sample_domain_id
         base_key = self.sample.sample_keypair_path
-        if os.path.exists(base + ".pub"):
-            os.remove(base + ".pub")
-            os.remove(base + ".pri")
-        if os.path.exists(base_key + ".pub"):
-            os.remove(base_key + ".pub")
-            os.remove(base_key + ".pri")
+        deleteKeyIfExists(base)
+        deleteKeyIfExists(base_key)
+        deleteKeyIfExists(self.sample.sample_account_name)
 
     def test_normal_with_account_name(self):
         command = self.commands["keygen"]["function"](
-            {"account_name": self.sample.sample_account_name}
+            {"account_id": self.sample.sample_account_name}
         )
-        self.assertTrue(os.path.exists(self.sample.sample_account_name+".pub") and os.path.exists(self.sample.sample_account_name+".pri"))
+        self.assertTrue(
+            os.path.exists("{}/.irohac/{}.pub".format(os.environ['HOME'], self.sample.sample_account_name)) and \
+            os.path.exists("{}/.irohac/{}".format(os.environ['HOME'], self.sample.sample_account_name))
+        )
 
     def test_normal_with_keypair_name(self):
         command = self.commands["keygen"]["function"](
-            {"account_name": self.sample.sample_account_name,
+            {"account_id": self.sample.sample_account_name,
             "keypair_name": self.sample.sample_keypair_path}
         )
-        self.assertTrue(os.path.exists(self.sample.sample_keypair_path+".pub") and os.path.exists(self.sample.sample_keypair_path+".pri"))
+        self.assertTrue(
+            os.path.exists("{}/.irohac/{}.pub".format(os.environ['HOME'], self.sample.sample_account_name)) and \
+            os.path.exists("{}/.irohac/{}".format(os.environ['HOME'], self.sample.sample_account_name))
+        )
 
     def test_error_no_account_name(self):
         try:
