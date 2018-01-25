@@ -83,7 +83,7 @@ I sent. (This error is expected, no problem 😅 😅 )
 
 In first, you can see all command use this.
 ```
-iroha-ya-cli
+irohac
 ```
 
 In second, you can see detail of each command.
@@ -108,7 +108,7 @@ optional arguments:
 #### 5) You can know data in Iroha using `query`.
 
 ```
-iroha-ya-cli query GetAccount --account_id admin@test --config my_config.yml
+irohac --hostname=localhost:50051 --account_id=admin@test GetAccount --account_id admin@test
 ```
 
 Response is json. so you can use command like `jq`
@@ -139,21 +139,15 @@ Response is json. so you can use command like `jq`
 
 ### Tx
 
-- CreateAsset 
+- CreateDomain
 ```
-iroha-ya-cli tx CreateAsset --domain_id japan --precision 0 --asset_name yen --config config.yml
+irohac --hostname=localhost:50051 --account_id=admin@test CreateDomain --default_role user --domain_id aizu
 ```
 
 - CreateAccount
 
 ```
-iroha-ya-cli tx CreateAccount --account_name mizuki --domain_id japan --config config.yml
-```
-
-- CreateDomain
-
-```
-iroha-ya-cli tx CreateDomain --domain_name aizu --config config.yml
+irohac --hostname=localhost:50051 --account_id=admin@test CreateAccount --account_name mizuki --domain_id japan
 ```
 
 ....
@@ -162,13 +156,13 @@ iroha-ya-cli tx CreateDomain --domain_name aizu --config config.yml
 
 - GetAccount 
 ```
-iroha-ya-cli query GetAccount --account_id admin@test --config my_config.yml 
+irohac --hostname=localhost:50051 --account_id=admin@test GetAccount --account_id admin@test
 ```
 
 - GetAccountTransactions
 
 ```
-iroha-ya-cli query GetAccountTransactions --account_id admin@test --config my_config.yml
+irohac --hostname=localhost:50051 --account_id=admin@test GetAccountTransactions --account_id admin@test
 ```
 
 ....
@@ -186,8 +180,6 @@ cd iroha-cli
 docker run -it -v  $(pwd):/opt/iroha-mizuki-cli mizukisonoko/alpine-grpc-protobuf sh -c  "cd /opt/iroha-mizuki-cli/schema; ls *.proto | xargs -I{} sh -c 'protoc -I=./ --python_out=../ {}; protoc -I=./ --python_out=../ --grpc_out=../ --plugin=protoc-gen-grpc=`which grpc_python_plugin` {}'"
 pip install -r requirements.txt 
 ```
-
-
 
 
 ## Env
