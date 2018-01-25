@@ -35,6 +35,9 @@ class ChiekuiCli:
         self.meta_parser.add_argument("--account_id", type=str, required=False,
                                       help="My account_id")
 
+        # ================================
+        #         Parser for Tx/Qry
+        # ================================
         _sub_parser = self.action_parser.add_subparsers()
 
         # parse: transaction
@@ -51,9 +54,14 @@ class ChiekuiCli:
                 _parser.add_argument("--{}".format(name), type=val["type"], required=val["required"],
                                      help=val["detail"])
 
+        # ================================
+        #         Parser for Built In
+        # ================================
+        self.built_in_parser = argparse.ArgumentParser(description='Cli of {}'.format(TARGET))
+        _sub_parser_bltin = self.built_in_parser.add_subparsers()
         # parse: built in command
         for cmd_name, cmd_val in self.built_in_commands.items():
-            _parser = _sub_parser.add_parser(cmd_name, help='{} help'.format(cmd_name))
+            _parser = _sub_parser_bltin.add_parser(cmd_name, help='{} help'.format(cmd_name))
             for name, val in self.built_in_commands[cmd_name]['option'].items():
                 _parser.add_argument("--{}".format(name), type=val["type"], required=val["required"],
                                      help=val["detail"])
