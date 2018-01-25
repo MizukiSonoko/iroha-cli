@@ -20,6 +20,11 @@ class BuildInCommand:
                         "type": str,
                         "detail": "target's account id",
                         "required": True
+                    },
+                    "keypair_name": {
+                        "type": str,
+                        "detail": "target's keypair name",
+                        "required": False
                     }
                 },
                 "function": self.keygen,
@@ -44,5 +49,7 @@ class BuildInCommand:
         self.validate(argv_info, argv)
 
         key_pair = crypto.generate_keypair()
-        account_id = argv["account_id"]
-        file_io.save_keypair(account_id, key_pair)
+        if "keypair_name" in argv:
+            file_io.save_keypair(argv["keypair_name"], key_pair)
+        else:
+            file_io.save_keypair(argv["account_id"], key_pair)

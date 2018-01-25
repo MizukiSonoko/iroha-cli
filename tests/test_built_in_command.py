@@ -57,8 +57,8 @@ class TestKeygen(unittest.TestCase):
             "keypair_name": self.sample.sample_keypair_path}
         )
         self.assertTrue(
-            os.path.exists("{}/.irohac/{}.pub".format(os.environ['HOME'], self.sample.sample_account_name)) and \
-            os.path.exists("{}/.irohac/{}".format(os.environ['HOME'], self.sample.sample_account_name))
+            os.path.exists("{}/.irohac/{}.pub".format(os.environ['HOME'], self.sample.sample_keypair_path)) and \
+            os.path.exists("{}/.irohac/{}".format(os.environ['HOME'], self.sample.sample_keypair_path))
         )
 
     def test_error_no_account_name(self):
