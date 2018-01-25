@@ -14,4 +14,4 @@ def save_keypair(filename_base, key_pair):
         with open("{}/.irohac/{}".format(os.environ['HOME'], filename_base), "w") as pri:
             pri.write(key_pair.private_key.decode())
     except (OSError, IOError) as e:
-        raise CliException("Cannot open : {name}".format(name=filename_base + ".pub"))
+        raise CliException("Cannot save : {name}".format(name=filename_base + ".pub"))
