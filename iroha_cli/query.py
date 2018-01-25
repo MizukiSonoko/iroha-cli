@@ -1,7 +1,8 @@
 
 from iroha_cli.exception import CliException
 from queries_pb2 import Query, GetAccount, GetSignatories, GetAccountTransactions, GetAccountAssetTransactions, \
-    GetAccountAssets
+    GetAccountAssets, GetAssetInfo
+
 
 BASE_NAME = "iroha-mizuki-cli"
 
@@ -53,6 +54,17 @@ class QueryList:
                 },
                 "function": self.GetAccountTransactions,
                 "detail": "get transactions of account"
+            },
+            "GetAssetInfo": {
+                "option": {
+                    "asset_id": {
+                        "type": str,
+                        "detail": "target's asset id like mizuki@domain",
+                        "required": True
+                    }
+                },
+                "function": self.GetAssetInfo,
+                "detail": "get information of asset"
             },
             "GetAccountAssetTransactions": {
                 "option": {
@@ -109,6 +121,14 @@ class QueryList:
         self.validate(argv_info, argv)
         return dict(get_account_signatories=GetSignatories(account_id=argv["account_id"]))
 
+    def GetAccountAssets(self, argv):
+        name = "GetAccountAssets"
+        argv_info = self.queries[name]["option"]
+        self.validate(argv_info, argv)
+        return dict(get_account_assets=GetAccountAssets(
+            account_id=argv["account_id"],
+            asset_id=argv["asset_id"]))
+
     def GetAccountTransactions(self, argv):
         name = "GetAccountTransactions"
         argv_info = self.queries[name]["option"]
@@ -123,11 +143,10 @@ class QueryList:
             account_id=argv["account_id"],
             asset_id=argv["asset_id"]))
 
-    def GetAccountAssets(self, argv):
-        name = "GetAccountAssets"
+    def GetAssetInfo(self, argv):
+        name = "GetAssetInfo"
         argv_info = self.queries[name]["option"]
         self.validate(argv_info, argv)
-        return dict(get_account_assets=GetAccountAssets(
-            account_id=argv["account_id"],
+        return dict(get_asset_info=GetAssetInfo(
             asset_id=argv["asset_id"]))
 
