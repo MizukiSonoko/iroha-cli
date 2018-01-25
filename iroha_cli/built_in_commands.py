@@ -16,22 +16,19 @@ class BuildInCommand:
         self.commands = {
             "keygen": {
                 "option": {
-                    "account_name": {
+                    "account_id": {
                         "type": str,
-                        "detail": "target's account name",
+                        "detail": "target's account id",
                         "required": True
                     },
-                    "make_conf": {
+                    "keypair_name": {
                         "type": str,
-                        "detail": "generate conf.yml",
+                        "detail": "target's keypair name",
                         "required": False
                     }
                 },
                 "function": self.keygen,
-                "detail": " Print current state \n"
-                          "   - name\n"
-                          "   - publicKey\n"
-                          "   - privateKey\n"
+                "detail": " Generate keypair\n"
             }
         }
 
@@ -53,21 +50,6 @@ class BuildInCommand:
 
         key_pair = crypto.generate_keypair()
         if "keypair_name" in argv:
-            filename_base = argv["keypair_name"]
+            file_io.save_keypair(argv["keypair_name"], key_pair)
         else:
-            filename_base = argv["account_name"]
-        file_io.save_keypair(filename_base, key_pair)
-
-        if "make_conf" in argv:
-            file_io.save_config(filename_base,{
-                "peer": {
-                    "address": "localhost",
-                    "port": 50051
-                },
-                "account": {
-                    "publicKeyPath": filename_base + ".pub",
-                    "privateKeyPath": filename_base + ".pri",
-                    "name": filename_base
-                }
-            })
-
+            file_io.save_keypair(argv["account_id"], key_pair)

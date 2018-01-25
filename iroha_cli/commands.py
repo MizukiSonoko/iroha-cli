@@ -165,10 +165,12 @@ class CommandList:
     def prev_CreateAccount(self, argv):
         # ToDo validate and print check
         # I want to auto generate
+        """
         key_pair = crypto.generate_keypair()
-        if "keypair_name" in argv and argv["keypair_name"]:
-            filename_base = argv["keypair_name"]
+        if "main_pubkey" in argv and argv["main_pubkey"]:
+            account_id = argv["main_pubkey"]
         else:
-            filename_base = argv["account_name"] + "@" + argv["domain_id"]
+            filename_base = argv["main_pubkey"] + "@" + argv["domain_id"]
 
         file_io.save_keypair(filename_base, key_pair)
+        """
