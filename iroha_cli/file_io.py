@@ -4,20 +4,6 @@ from iroha_cli.exception import CliException
 
 BASE_NAME = "iroha-mizuki-cli"
 
-
-def save_config(filename_base, data):
-    import yaml
-    conf_path = "config.yml"
-    dumped_conf = yaml.dump(data, default_flow_style=False)
-
-    try:
-        with open(conf_path, "w") as conf_file:
-            conf_file.write(dumped_conf)
-    except (OSError, IOError) as e:
-        print(e)
-        raise CliException("Cannot open : {name}".format(name=conf_path))
-
-
 def save_keypair(filename_base, key_pair):
     try:
         if os.path.exists("{}/.irohac/{}.pub".format(os.environ['HOME'], filename_base)) or \
