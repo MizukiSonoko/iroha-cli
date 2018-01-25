@@ -86,34 +86,38 @@ class ChiekuiCli:
         )
 
     def exec_tx(self, cmd, argv):
-        command = self.tx_commands[cmd]["function"](vars(argv))
-        if command:
+        try:
+            command = self.tx_commands[cmd]["function"](vars(argv))
+            if command:
 
-            if not self.key_pair:
-                print("Key pair is not loaded! to send tx require key pair")
-                return -1
+                if not self.key_pair:
+                    print("Key pair is not loaded! to send tx require key pair")
+                    return -1
 
-            tx, tx_hash = generateTransaction(self.account_id, [command], self.key_pair)
-            if not sendTx(self.hostname, tx):
-                print(
-                    "Transaction is not arrived...\n"
-                    "Could you ckeck this => {}\n".format(self.hostname)
-                )
-                return -1
-            try:
-                waitTransaciton(self.hostname, tx_hash)
-            except TimeoutError as t:
-                pass
-            except Exception as e:
-                print(e)
-                print(
-                    "failed to executed the transaction \n"
-                    "error => {}\n".format(e)
-                )
-                return -1
+                tx, tx_hash = generateTransaction(self.account_id, [command], self.key_pair)
+                if not sendTx(self.hostname, tx):
+                    print(
+                        "Transaction is not arrived...\n"
+                        "Could you ckeck this => {}\n".format(self.hostname)
+                    )
+                    return -1
+                try:
+                    waitTransaciton(self.hostname, tx_hash)
+                except TimeoutError as t:
+                    pass
+                except Exception as e:
+                    print(e)
+                    print(
+                        "failed to executed the transaction \n"
+                        "error => {}\n".format(e)
+                    )
+                    return -1
 
-        else:
-            print("Err")
+            else:
+                print("Err")
+                return -1
+        except CliException as e:
+            print(e.message)
             return -1
 
     def exec_query(self, qry, argv):
@@ -135,12 +139,14 @@ class ChiekuiCli:
         if len(argv) < 2:
             return self.print_introduction()
 
+        if argv[1] in self.built_in_commands:
+            blt_parsed_argv = self.built_in_parser.parse_args(argv[1:])
+            return self.built_in_commands[argv[1]]["function"](vars(blt_parsed_argv))
+
         meta_parsed_argv = self.meta_parser.parse_args(argv[1:3])
         parsed_argv = self.action_parser.parse_args(argv[3:])
 
         # There is action not requiring transaction / query in built-in-command
-        if argv[1] in self.built_in_commands:
-            return self.built_in_commands[argv[1]]["function"](vars(parsed_argv))
 
         # Sending transaction / query is require creator's account_id and target hostname
         if vars(meta_parsed_argv)["account_id"] is None or \

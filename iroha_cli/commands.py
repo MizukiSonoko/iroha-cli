@@ -1,3 +1,4 @@
+import base64
 import os
 from enum import Enum
 
@@ -31,7 +32,7 @@ class CommandList:
                         "type": int,
                         "detail": "target's asset id like japan/yen",
                         "required": True,
-                        "converter": lambda amount: int_to_amount(amount, precision=0)
+                        "converter": lambda amount, argv: int_to_amount(amount, precision=0)
                     },
                 },
                 "function": self.generate("add_asset_quantity","AddAssetQuantity"),
@@ -54,7 +55,7 @@ class CommandList:
                         "detail": "save to this keypair_name like mizukey, if no set, generates ${"
                                   "account_name}.pub/${account_name} ",
                         "required": False,
-                        "command_arguments": False
+                        "converter": lambda pub_key_name,argv: self.load_key(pub_key_name,argv)
                     }
                 },
                 "function": self.generate("create_account","CreateAccount",self.prev_CreateAccount),
@@ -92,7 +93,7 @@ class CommandList:
                         "type": int,
                         "detail": "how much support .000, default 0",
                         "required": False,
-                        "converter": lambda precision: precision if precision else 0
+                        "converter": lambda precision, argv: precision if precision else 0
                     }
                 },
                 "function": self.generate("create_asset","CreateAsset"),
@@ -141,9 +142,11 @@ class CommandList:
                 argv.pop("config")
 
             for name, value in self.commands[class_name]["option"].items():
+
                 # Convert value like int -> Amount
                 if "converter" in value:
-                    argv[name] = value["converter"](argv[name])
+                    argv[name] = value["converter"](argv[name],argv)
+
                 # 'command_arguments' is used only cli, so remove before construct command
                 if "command_arguments" in value and name in argv:
                     argv.pop(name)
@@ -162,15 +165,34 @@ class CommandList:
                         str(item[1]["type"])
                     ))
 
+    def load_key( self,pub_key_name, argv):
+        base = '{}/.irohac'.format(os.environ['HOME'])
+        os.makedirs('{}/.irohac'.format(os.environ['HOME']), exist_ok=True)
+
+        try:
+            if "main_pubkey" in argv and argv["main_pubkey"] != None:
+                main_pubkey = argv["main_pubkey"]
+                with open("{}/.irohac/{}.pub".format(os.environ['HOME'], main_pubkey), "r") as pub:
+                    return base64.b64decode(pub.read())
+            else:
+                account_id = argv["account_name"] + "@" + argv["domain_id"]
+                with open("{}/.irohac/{}.pub".format(os.environ['HOME'], account_id), "r") as pub:
+                    return base64.b64decode(pub.read())
+
+        except (OSError, IOError) as e:
+            raise CliException("Cannot open : {name}".format(name="{}/{}.pub".format(base, main_pubkey)))
+
+
     def prev_CreateAccount(self, argv):
         # ToDo validate and print check
         # I want to auto generate
-        """
-        key_pair = crypto.generate_keypair()
-        if "main_pubkey" in argv and argv["main_pubkey"]:
-            account_id = argv["main_pubkey"]
-        else:
-            filename_base = argv["main_pubkey"] + "@" + argv["domain_id"]
+        base = '{}/.irohac'.format(os.environ['HOME'])
+        os.makedirs('{}/.irohac'.format(os.environ['HOME']), exist_ok=True)
 
-        file_io.save_keypair(filename_base, key_pair)
-        """
+        key_pair = crypto.generate_keypair()
+        if "main_pubkey" in argv and argv["main_pubkey"] != None:
+            main_pubkey = argv["main_pubkey"]
+            file_io.save_keypair(main_pubkey, key_pair)
+        else:
+            account_id = argv["account_name"] + "@" + argv["domain_id"]
+            file_io.save_keypair(account_id, key_pair)
