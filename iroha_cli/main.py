@@ -166,10 +166,17 @@ class ChiekuiCli:
                 publicKey = pubKeyFile.read()
             with open("{}/.irohac/{}".format(os.environ['HOME'], self.account_id), "r") as priKeyFile:
                 privateKey = priKeyFile.read()
-            self.key_pair = KeyPair(
-                base64.b64encode(bytearray.fromhex(publicKey)),
-                base64.b64encode(bytearray.fromhex(privateKey))
-            )
+            try:
+                self.key_pair = KeyPair(
+                    base64.b64encode(bytearray.fromhex(publicKey)),
+                    base64.b64encode(bytearray.fromhex(privateKey))
+                )
+            except ValueError as e:
+                self.key_pair = KeyPair(
+                    publicKey,
+                    privateKey
+                )
+
         except FileNotFoundError:
             raise CliException("File not found : {}/.irohac/{}".format(os.environ['HOME'], self.hostname))
 
